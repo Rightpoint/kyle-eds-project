@@ -1,0 +1,40 @@
+{
+  "variantName": "carousel-timeline",
+  "baseBlock": "carousel",
+  "version": "1.0.0",
+  "created": "2026-04-02T16:25:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.genpact.com/about-us",
+    "originPage": "Corporate about us page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "spacious",
+    "purpose": "timeline-carousel",
+    "imagePattern": "noimg",
+    "structure": "year + description (navigable timeline)"
+  },
+  "contentPattern": {
+    "structure": "year + description (navigable timeline)",
+    "buttonCount": 0,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "Company history timelines",
+      "Year-based milestone displays",
+      "Chronological event carousels"
+    ],
+    "notSuitableFor": [
+      "Image-based carousels",
+      "Product showcases",
+      "Testimonial sliders"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/about-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-04-02T16:25:00.000Z"
+  }
+}

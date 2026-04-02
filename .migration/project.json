@@ -1,0 +1,9 @@
+{
+  "type": "xwalk",
+  "libraryUrl": "https://main--sta-xwalk-boilerplate--aemysites.aem.page/tools/sidekick/library.json",
+  "contentHostUrl": "author-p133739-e1306963.adobeaemcloud.com",
+  "aemSitePath": "/content/kyle-eds-site",
+  "aemAssetsFolderPath": "/content/dam/kyle-eds-site",
+  "aemSiteName": "kyle-eds-site",
+  "aemSiteTitle": "Kyle EDS Site"
+}

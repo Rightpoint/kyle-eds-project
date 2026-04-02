@@ -1,0 +1,40 @@
+{
+  "variantName": "cards-subnav",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-04-02T16:25:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.genpact.com/about-us",
+    "originPage": "Corporate about us page",
+    "blockPosition": "top"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "compact",
+    "purpose": "subnav-cards",
+    "imagePattern": "thumbnail",
+    "structure": "image + title + description + link"
+  },
+  "contentPattern": {
+    "structure": "image + title + description + link",
+    "buttonCount": 0,
+    "imageCount": 7
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "Sub-navigation cards with thumbnails",
+      "Section landing page navigation",
+      "Horizontal scrollable card navigation"
+    ],
+    "notSuitableFor": [
+      "Product grid cards",
+      "Blog article cards",
+      "Feature highlight cards"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/about-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-04-02T16:25:00.000Z"
+  }
+}
