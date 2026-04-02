@@ -1,0 +1,40 @@
+{
+  "variantName": "hero-corporate",
+  "baseBlock": "hero",
+  "version": "1.0.0",
+  "created": "2026-04-02T16:25:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.genpact.com/about-us",
+    "originPage": "Corporate about us page",
+    "blockPosition": "top"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "spacious",
+    "purpose": "corporate-hero",
+    "imagePattern": "logo-right",
+    "structure": "eyebrow + heading + description + image"
+  },
+  "contentPattern": {
+    "structure": "eyebrow + heading + description + image",
+    "buttonCount": 0,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "Corporate about pages",
+      "Company overview pages",
+      "Pages with 50/50 text-image hero layout"
+    ],
+    "notSuitableFor": [
+      "Product pages with full-width background images",
+      "Landing pages with CTA buttons",
+      "Blog post heroes"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/about-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-04-02T16:25:00.000Z"
+  }
+}

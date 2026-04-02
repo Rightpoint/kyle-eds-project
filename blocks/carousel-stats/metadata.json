@@ -1,0 +1,40 @@
+{
+  "variantName": "carousel-stats",
+  "baseBlock": "carousel",
+  "version": "1.0.0",
+  "created": "2026-04-02T16:25:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.genpact.com/about-us",
+    "originPage": "Corporate about us page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "compact",
+    "purpose": "stats-carousel",
+    "imagePattern": "noimg",
+    "structure": "large number + label (horizontal slide)"
+  },
+  "contentPattern": {
+    "structure": "large number + label (horizontal slide)",
+    "buttonCount": 0,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "Key statistics display",
+      "Company metrics carousel",
+      "Number-focused data slides"
+    ],
+    "notSuitableFor": [
+      "Image-heavy carousels",
+      "Content-rich slides with paragraphs",
+      "Testimonial carousels"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/about-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-04-02T16:25:00.000Z"
+  }
+}

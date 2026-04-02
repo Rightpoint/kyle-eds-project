@@ -1,0 +1,4382 @@
+diff --git a/.migration/project.json b/.migration/project.json
+new file mode 100644
+index 0000000..2e3aba7
+--- /dev/null
++++ b/.migration/project.json
+@@ -0,0 +1,9 @@
++{
++  "type": "xwalk",
++  "libraryUrl": "https://main--sta-xwalk-boilerplate--aemysites.aem.page/tools/sidekick/library.json",
++  "contentHostUrl": "author-p133739-e1306963.adobeaemcloud.com",
++  "aemSitePath": "/content/kyle-eds-site",
++  "aemAssetsFolderPath": "/content/dam/kyle-eds-site",
++  "aemSiteName": "kyle-eds-site",
++  "aemSiteTitle": "Kyle EDS Site"
++}
+\ No newline at end of file
+diff --git a/blocks/cards-subnav/_cards-subnav.json b/blocks/cards-subnav/_cards-subnav.json
+new file mode 100644
+index 0000000..83759a7
+--- /dev/null
++++ b/blocks/cards-subnav/_cards-subnav.json
+@@ -0,0 +1,63 @@
++{
++  "definitions": [
++    {
++      "title": "Cards Subnav",
++      "id": "cards-subnav",
++      "plugins": {
++        "xwalk": {
++          "page": {
++            "resourceType": "core/franklin/components/block/v1/block",
++            "template": {
++              "name": "Cards Subnav",
++              "filter": "cards-subnav"
++            }
++          }
++        }
++      }
++    },
++    {
++      "title": "Card",
++      "id": "card",
++      "plugins": {
++        "xwalk": {
++          "page": {
++            "resourceType": "core/franklin/components/block/v1/block/item",
++            "template": {
++              "name": "Card",
++              "model": "card"
++            }
++          }
++        }
++      }
++    }
++  ],
++  "models": [
++    {
++      "id": "card",
++      "fields": [
++        {
++          "component": "reference",
++          "valueType": "string",
++          "name": "image",
++          "label": "Image",
++          "multi": false
++        },
++        {
++          "component": "richtext",
++          "name": "text",
++          "value": "",
++          "label": "Text",
++          "valueType": "string"
++        }
++      ]
++    }
++  ],
++  "filters": [
++    {
++      "id": "cards-subnav",
++      "components": [
++        "card"
++      ]
++    }
++  ]
++}
+diff --git a/blocks/cards-subnav/cards-subnav.css b/blocks/cards-subnav/cards-subnav.css
+new file mode 100644
+index 0000000..3482d20
+--- /dev/null
++++ b/blocks/cards-subnav/cards-subnav.css
+@@ -0,0 +1,27 @@
++.cards-subnav > ul {
++  list-style: none;
++  margin: 0;
++  padding: 0;
++  display: grid;
++  grid-template-columns: repeat(auto-fill, minmax(257px, 1fr));
++  gap: 24px;
++}
++
++.cards-subnav > ul > li {
++  border: 1px solid #dadada;
++  background-color: var(--background-color);
++}
++
++.cards-subnav .cards-subnav-card-body {
++  margin: 16px;
++}
++
++.cards-subnav .cards-subnav-card-image {
++  line-height: 0;
++}
++
++.cards-subnav > ul > li img {
++  width: 100%;
++  aspect-ratio: 4 / 3;
++  object-fit: cover;
++}
+diff --git a/blocks/cards-subnav/cards-subnav.js b/blocks/cards-subnav/cards-subnav.js
+new file mode 100644
+index 0000000..98011d2
+--- /dev/null
++++ b/blocks/cards-subnav/cards-subnav.js
+@@ -0,0 +1,24 @@
++import { createOptimizedPicture } from '../../scripts/aem.js';
++import { moveInstrumentation } from '../../scripts/scripts.js';
++
++export default function decorate(block) {
++  /* change to ul, li */
++  const ul = document.createElement('ul');
++  [...block.children].forEach((row) => {
++    const li = document.createElement('li');
++    moveInstrumentation(row, li);
++    while (row.firstElementChild) li.append(row.firstElementChild);
++    [...li.children].forEach((div) => {
++      if (div.children.length === 1 && div.querySelector('picture')) div.className = 'cards-subnav-card-image';
++      else div.className = 'cards-subnav-card-body';
++    });
++    ul.append(li);
++  });
++  ul.querySelectorAll('picture > img').forEach((img) => {
++    const optimizedPic = createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }]);
++    moveInstrumentation(img, optimizedPic.querySelector('img'));
++    img.closest('picture').replaceWith(optimizedPic);
++  });
++  block.textContent = '';
++  block.append(ul);
++}
+diff --git a/blocks/cards-subnav/metadata.json b/blocks/cards-subnav/metadata.json
+new file mode 100644
+index 0000000..4080186
+--- /dev/null
++++ b/blocks/cards-subnav/metadata.json
+@@ -0,0 +1,40 @@
++{
++  "variantName": "cards-subnav",
++  "baseBlock": "cards",
++  "version": "1.0.0",
++  "created": "2026-04-02T16:25:00.000Z",
++  "sourceContext": {
++    "originUrl": "https://www.genpact.com/about-us",
++    "originPage": "Corporate about us page",
++    "blockPosition": "top"
++  },
++  "visualCharacteristics": {
++    "colorScheme": "dark",
++    "density": "compact",
++    "purpose": "subnav-cards",
++    "imagePattern": "thumbnail",
++    "structure": "image + title + description + link"
++  },
++  "contentPattern": {
++    "structure": "image + title + description + link",
++    "buttonCount": 0,
++    "imageCount": 7
++  },
++  "reuseGuidance": {
++    "suitableFor": [
++      "Sub-navigation cards with thumbnails",
++      "Section landing page navigation",
++      "Horizontal scrollable card navigation"
++    ],
++    "notSuitableFor": [
++      "Product grid cards",
++      "Blog article cards",
++      "Feature highlight cards"
++    ]
++  },
++  "usage": {
++    "pagesUsing": ["/about-us"],
++    "reuseCount": 1,
++    "lastUsed": "2026-04-02T16:25:00.000Z"
++  }
++}
+diff --git a/blocks/carousel-stats/_carousel-stats.json b/blocks/carousel-stats/_carousel-stats.json
+new file mode 100644
+index 0000000..ed2211b
+--- /dev/null
++++ b/blocks/carousel-stats/_carousel-stats.json
+@@ -0,0 +1,70 @@
++{
++  "definitions": [
++    {
++      "title": "Carousel Stats",
++      "id": "carousel-stats",
++      "plugins": {
++        "xwalk": {
++          "page": {
++            "resourceType": "core/franklin/components/block/v1/block",
++            "template": {
++              "name": "Carousel Stats",
++              "filter": "carousel-stats"
++            }
++          }
++        }
++      }
++    },
++    {
++      "title": "Carousel Stats Slide",
++      "id": "carousel-stats-item",
++      "plugins": {
++        "xwalk": {
++          "page": {
++            "resourceType": "core/franklin/components/block/v1/block/item",
++            "template": {
++              "name": "Carousel Stats Slide",
++              "model": "carousel-stats-item"
++            }
++          }
++        }
++      }
++    }
++  ],
++  "models": [
++    {
++      "id": "carousel-stats-item",
++      "fields": [
++        {
++          "component": "reference",
++          "valueType": "string",
++          "name": "media_image",
++          "label": "Background Image",
++          "multi": false
++        },
++        {
++          "component": "text",
++          "valueType": "string",
++          "name": "media_imageAlt",
++          "value": "",
++          "label": "Background Alt"
++        },
++        {
++          "component": "richtext",
++          "name": "content_text",
++          "value": "",
++          "label": "Text",
++          "valueType": "string"
++        }
++      ]
++    }
++  ],
++  "filters": [
++    {
++      "id": "carousel-stats",
++      "components": [
++        "carousel-stats-item"
++      ]
++    }
++  ]
++}
+diff --git a/blocks/carousel-stats/carousel-stats.css b/blocks/carousel-stats/carousel-stats.css
+new file mode 100644
+index 0000000..34b6ab4
+--- /dev/null
++++ b/blocks/carousel-stats/carousel-stats.css
+@@ -0,0 +1,153 @@
++.carousel-stats .carousel-stats-slides-container {
++  position: relative;
++}
++
++.carousel-stats .carousel-stats-slides,
++.carousel-stats .carousel-stats-slide-indicators {
++  list-style: none;
++  margin: 0;
++  padding: 0;
++}
++
++.carousel-stats .carousel-stats-slides {
++  display: flex;
++  scroll-behavior: smooth;
++  scroll-snap-type: x mandatory;
++  overflow: scroll clip;
++}
++
++.carousel-stats .carousel-stats-slides::-webkit-scrollbar {
++  display: none;
++}
++
++.carousel-stats .carousel-stats-slide {
++  flex: 0 0 100%;
++  scroll-snap-align: start;
++  display: flex;
++  flex-direction: column;
++  align-items: flex-start;
++  justify-content: center;
++  position: relative;
++  width: 100%;
++  min-height: min(50vw, calc(100dvh - var(--header-height)));
++}
++
++.carousel-stats .carousel-stats-slide:has(.carousel-stats-slide-content[data-align='center']) {
++  align-items: center;
++}
++
++.carousel-stats .carousel-stats-slide:has(.carousel-stats-slide-content[data-align='right']) {
++  align-items: flex-end;
++}
++
++.carousel-stats .carousel-stats-slide .carousel-stats-slide-image picture {
++  position: absolute;
++  inset: 0;
++}
++
++.carousel-stats .carousel-stats-slide .carousel-stats-slide-image picture > img {
++  height: 100%;
++  width: 100%;
++  object-fit: cover;
++}
++
++.carousel-stats .carousel-stats-slide .carousel-stats-slide-content {
++  z-index: 1;
++  margin: 68px;
++  padding: 16px;
++  color: white;
++  background-color: rgb(19 19 19 / 75%);
++  position: relative;
++  width: var(--slide-content-width, auto);
++}
++
++.carousel-stats .carousel-stats-slide-indicators {
++  display: flex;
++  flex-wrap: wrap;
++  justify-content: center;
++  gap: 6px 12px;
++  padding: 12px;
++  background-color: var(--light-color);
++  line-height: 0;
++}
++
++.carousel-stats .carousel-stats-slide-indicator button {
++  width: 24px;
++  height: 24px;
++  margin: 0;
++  padding: 0;
++  border-radius: 50%;
++  background-color: #dadada;
++  transition: background-color 0.2s;
++}
++
++.carousel-stats .carousel-stats-slide-indicator button:disabled,
++.carousel-stats .carousel-stats-slide-indicator button:hover,
++.carousel-stats .carousel-stats-slide-indicator button:focus-visible {
++  background-color: var(--text-color);
++}
++
++.carousel-stats .carousel-stats-navigation-buttons {
++  position: absolute;
++  top: 50%;
++  transform: translateY(-50%);
++  left: 12px;
++  right: 12px;
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  z-index: 1;
++}
++
++/* stylelint-disable-next-line no-descending-specificity */
++.carousel-stats .carousel-stats-navigation-buttons button {
++  position: relative;
++  width: 44px;
++  height: 44px;
++  margin: 0;
++  border-radius: 50%;
++  padding: 0;
++  background-color: rgb(19 19 19 / 25%);
++  transition: background-color 0.2s;
++}
++
++.carousel-stats .carousel-stats-navigation-buttons button:hover,
++.carousel-stats .carousel-stats-navigation-buttons button:focus-visible {
++  background-color: rgb(19 19 19 / 75%);
++}
++
++.carousel-stats .carousel-stats-navigation-buttons button::after {
++  display: block;
++  content: '';
++  border: 2px solid;
++  border-bottom: 0;
++  border-left: 0;
++  height: 12px;
++  width: 12px;
++  position: absolute;
++  top: 50%;
++  left: calc(50% + 2px);
++  transform: translate(-50%, -50%) rotate(-135deg);
++}
++
++.carousel-stats .carousel-stats-navigation-buttons button.slide-next::after {
++  transform: translate(-50%, -50%) rotate(45deg);
++  left: calc(50% - 2px);
++}
++
++@media (width >= 600px) {
++  .carousel-stats .carousel-stats-navigation-buttons {
++    left: 24px;
++    right: 24px;
++  }
++
++  .carousel-stats .carousel-stats-slide .carousel-stats-slide-content {
++    --slide-content-width: calc((100% - 184px) / 2);
++
++    margin: 92px;
++  }
++
++  .carousel-stats .carousel-stats-slide .carousel-stats-slide-content[data-align='justify'] {
++    --slide-content-width: auto;
++  }
++}
+diff --git a/blocks/carousel-stats/carousel-stats.js b/blocks/carousel-stats/carousel-stats.js
+new file mode 100644
+index 0000000..6dbb13b
+--- /dev/null
++++ b/blocks/carousel-stats/carousel-stats.js
+@@ -0,0 +1,152 @@
++import { moveInstrumentation } from '../../scripts/scripts.js';
++import { fetchPlaceholders } from '../../scripts/placeholders.js';
++
++function updateActiveSlide(slide) {
++  const block = slide.closest('.carousel-stats');
++  const slideIndex = parseInt(slide.dataset.slideIndex, 10);
++  block.dataset.activeSlide = slideIndex;
++
++  const slides = block.querySelectorAll('.carousel-stats-slide');
++
++  slides.forEach((aSlide, idx) => {
++    aSlide.setAttribute('aria-hidden', idx !== slideIndex);
++    aSlide.querySelectorAll('a').forEach((link) => {
++      if (idx !== slideIndex) {
++        link.setAttribute('tabindex', '-1');
++      } else {
++        link.removeAttribute('tabindex');
++      }
++    });
++  });
++
++  const indicators = block.querySelectorAll('.carousel-stats-slide-indicator');
++  indicators.forEach((indicator, idx) => {
++    if (idx !== slideIndex) {
++      indicator.querySelector('button').removeAttribute('disabled');
++    } else {
++      indicator.querySelector('button').setAttribute('disabled', 'true');
++    }
++  });
++}
++
++export function showSlide(block, slideIndex = 0, behavior = 'smooth') {
++  const slides = block.querySelectorAll('.carousel-stats-slide');
++  let realSlideIndex = slideIndex < 0 ? slides.length - 1 : slideIndex;
++  if (slideIndex >= slides.length) realSlideIndex = 0;
++  const activeSlide = slides[realSlideIndex];
++
++  activeSlide.querySelectorAll('a').forEach((link) => link.removeAttribute('tabindex'));
++  block.querySelector('.carousel-stats-slides').scrollTo({
++    top: 0,
++    left: activeSlide.offsetLeft,
++    behavior,
++  });
++}
++
++function bindEvents(block) {
++  const slideIndicators = block.querySelector('.carousel-stats-slide-indicators');
++  if (!slideIndicators) return;
++
++  slideIndicators.querySelectorAll('button').forEach((button) => {
++    button.addEventListener('click', (e) => {
++      const slideIndicator = e.currentTarget.parentElement;
++      showSlide(block, parseInt(slideIndicator.dataset.targetSlide, 10));
++    });
++  });
++
++  block.querySelector('.slide-prev').addEventListener('click', () => {
++    showSlide(block, parseInt(block.dataset.activeSlide, 10) - 1);
++  });
++  block.querySelector('.slide-next').addEventListener('click', () => {
++    showSlide(block, parseInt(block.dataset.activeSlide, 10) + 1);
++  });
++
++  const slideObserver = new IntersectionObserver((entries) => {
++    entries.forEach((entry) => {
++      if (entry.isIntersecting) updateActiveSlide(entry.target);
++    });
++  }, { threshold: 0.5 });
++  block.querySelectorAll('.carousel-stats-slide').forEach((slide) => {
++    slideObserver.observe(slide);
++  });
++}
++
++function createSlide(row, slideIndex, carouselId) {
++  const slide = document.createElement('li');
++  slide.dataset.slideIndex = slideIndex;
++  slide.setAttribute('id', `carousel-stats-${carouselId}-slide-${slideIndex}`);
++  slide.classList.add('carousel-stats-slide');
++
++  row.querySelectorAll(':scope > div').forEach((column, colIdx) => {
++    column.classList.add(`carousel-stats-slide-${colIdx === 0 ? 'image' : 'content'}`);
++    slide.append(column);
++  });
++
++  const labeledBy = slide.querySelector('h1, h2, h3, h4, h5, h6');
++  if (labeledBy) {
++    slide.setAttribute('aria-labelledby', labeledBy.getAttribute('id'));
++  }
++
++  return slide;
++}
++
++let carouselId = 0;
++export default async function decorate(block) {
++  carouselId += 1;
++  block.setAttribute('id', `carousel-stats-${carouselId}`);
++  const rows = block.querySelectorAll(':scope > div');
++  const isSingleSlide = rows.length < 2;
++
++  const placeholders = await fetchPlaceholders();
++
++  block.setAttribute('role', 'region');
++  block.setAttribute('aria-roledescription', placeholders.carousel || 'Carousel');
++
++  const container = document.createElement('div');
++  container.classList.add('carousel-stats-slides-container');
++
++  const slidesWrapper = document.createElement('ul');
++  slidesWrapper.classList.add('carousel-stats-slides');
++  block.prepend(slidesWrapper);
++
++  let slideIndicators;
++  if (!isSingleSlide) {
++    const slideIndicatorsNav = document.createElement('nav');
++    slideIndicatorsNav.setAttribute('aria-label', placeholders.carouselSlideControls || 'Carousel Slide Controls');
++    slideIndicators = document.createElement('ol');
++    slideIndicators.classList.add('carousel-stats-slide-indicators');
++    slideIndicatorsNav.append(slideIndicators);
++    block.append(slideIndicatorsNav);
++
++    const slideNavButtons = document.createElement('div');
++    slideNavButtons.classList.add('carousel-stats-navigation-buttons');
++    slideNavButtons.innerHTML = `
++      <button type="button" class= "slide-prev" aria-label="${placeholders.previousSlide || 'Previous Slide'}"></button>
++      <button type="button" class="slide-next" aria-label="${placeholders.nextSlide || 'Next Slide'}"></button>
++    `;
++
++    container.append(slideNavButtons);
++  }
++
++  rows.forEach((row, idx) => {
++    const slide = createSlide(row, idx, carouselId);
++    moveInstrumentation(row, slide);
++    slidesWrapper.append(slide);
++
++    if (slideIndicators) {
++      const indicator = document.createElement('li');
++      indicator.classList.add('carousel-stats-slide-indicator');
++      indicator.dataset.targetSlide = idx;
++      indicator.innerHTML = `<button type="button" aria-label="${placeholders.showSlide || 'Show Slide'} ${idx + 1} ${placeholders.of || 'of'} ${rows.length}"></button>`;
++      slideIndicators.append(indicator);
++    }
++    row.remove();
++  });
++
++  container.append(slidesWrapper);
++  block.prepend(container);
++
++  if (!isSingleSlide) {
++    bindEvents(block);
++  }
++}
+diff --git a/blocks/carousel-stats/metadata.json b/blocks/carousel-stats/metadata.json
+new file mode 100644
+index 0000000..44ad8a2
+--- /dev/null
++++ b/blocks/carousel-stats/metadata.json
+@@ -0,0 +1,40 @@
++{
++  "variantName": "carousel-stats",
++  "baseBlock": "carousel",
++  "version": "1.0.0",
++  "created": "2026-04-02T16:25:00.000Z",
++  "sourceContext": {
++    "originUrl": "https://www.genpact.com/about-us",
++    "originPage": "Corporate about us page",
++    "blockPosition": "middle"
++  },
++  "visualCharacteristics": {
++    "colorScheme": "dark",
++    "density": "compact",
++    "purpose": "stats-carousel",
++    "imagePattern": "noimg",
++    "structure": "large number + label (horizontal slide)"
++  },
++  "contentPattern": {
++    "structure": "large number + label (horizontal slide)",
++    "buttonCount": 0,
++    "imageCount": 0
++  },
++  "reuseGuidance": {
++    "suitableFor": [
++      "Key statistics display",
++      "Company metrics carousel",
++      "Number-focused data slides"
++    ],
++    "notSuitableFor": [
++      "Image-heavy carousels",
++      "Content-rich slides with paragraphs",
++      "Testimonial carousels"
++    ]
++  },
++  "usage": {
++    "pagesUsing": ["/about-us"],
++    "reuseCount": 1,
++    "lastUsed": "2026-04-02T16:25:00.000Z"
++  }
++}
+diff --git a/blocks/carousel-timeline/_carousel-timeline.json b/blocks/carousel-timeline/_carousel-timeline.json
+new file mode 100644
+index 0000000..d95b1e5
+--- /dev/null
++++ b/blocks/carousel-timeline/_carousel-timeline.json
+@@ -0,0 +1,70 @@
++{
++  "definitions": [
++    {
++      "title": "Carousel Timeline",
++      "id": "carousel-timeline",
++      "plugins": {
++        "xwalk": {
++          "page": {
++            "resourceType": "core/franklin/components/block/v1/block",
++            "template": {
++              "name": "Carousel Timeline",
++              "filter": "carousel-timeline"
++            }
++          }
++        }
++      }
++    },
++    {
++      "title": "Carousel Timeline Slide",
++      "id": "carousel-timeline-item",
++      "plugins": {
++        "xwalk": {
++          "page": {
++            "resourceType": "core/franklin/components/block/v1/block/item",
++            "template": {
++              "name": "Carousel Timeline Slide",
++              "model": "carousel-timeline-item"
++            }
++          }
++        }
++      }
++    }
++  ],
++  "models": [
++    {
++      "id": "carousel-timeline-item",
++      "fields": [
++        {
++          "component": "reference",
++          "valueType": "string",
++          "name": "media_image",
++          "label": "Background Image",
++          "multi": false
++        },
++        {
++          "component": "text",
++          "valueType": "string",
++          "name": "media_imageAlt",
++          "value": "",
++          "label": "Background Alt"
++        },
++        {
++          "component": "richtext",
++          "name": "content_text",
++          "value": "",
++          "label": "Text",
++          "valueType": "string"
++        }
++      ]
++    }
++  ],
++  "filters": [
++    {
++      "id": "carousel-timeline",
++      "components": [
++        "carousel-timeline-item"
++      ]
++    }
++  ]
++}
+diff --git a/blocks/carousel-timeline/carousel-timeline.css b/blocks/carousel-timeline/carousel-timeline.css
+new file mode 100644
+index 0000000..b7ea519
+--- /dev/null
++++ b/blocks/carousel-timeline/carousel-timeline.css
+@@ -0,0 +1,153 @@
++.carousel-timeline .carousel-timeline-slides-container {
++  position: relative;
++}
++
++.carousel-timeline .carousel-timeline-slides,
++.carousel-timeline .carousel-timeline-slide-indicators {
++  list-style: none;
++  margin: 0;
++  padding: 0;
++}
++
++.carousel-timeline .carousel-timeline-slides {
++  display: flex;
++  scroll-behavior: smooth;
++  scroll-snap-type: x mandatory;
++  overflow: scroll clip;
++}
++
++.carousel-timeline .carousel-timeline-slides::-webkit-scrollbar {
++  display: none;
++}
++
++.carousel-timeline .carousel-timeline-slide {
++  flex: 0 0 100%;
++  scroll-snap-align: start;
++  display: flex;
++  flex-direction: column;
++  align-items: flex-start;
++  justify-content: center;
++  position: relative;
++  width: 100%;
++  min-height: min(50vw, calc(100dvh - var(--header-height)));
++}
++
++.carousel-timeline .carousel-timeline-slide:has(.carousel-timeline-slide-content[data-align='center']) {
++  align-items: center;
++}
++
++.carousel-timeline .carousel-timeline-slide:has(.carousel-timeline-slide-content[data-align='right']) {
++  align-items: flex-end;
++}
++
++.carousel-timeline .carousel-timeline-slide .carousel-timeline-slide-image picture {
++  position: absolute;
++  inset: 0;
++}
++
++.carousel-timeline .carousel-timeline-slide .carousel-timeline-slide-image picture > img {
++  height: 100%;
++  width: 100%;
++  object-fit: cover;
++}
++
++.carousel-timeline .carousel-timeline-slide .carousel-timeline-slide-content {
++  z-index: 1;
++  margin: 68px;
++  padding: 16px;
++  color: white;
++  background-color: rgb(19 19 19 / 75%);
++  position: relative;
++  width: var(--slide-content-width, auto);
++}
++
++.carousel-timeline .carousel-timeline-slide-indicators {
++  display: flex;
++  flex-wrap: wrap;
++  justify-content: center;
++  gap: 6px 12px;
++  padding: 12px;
++  background-color: var(--light-color);
++  line-height: 0;
++}
++
++.carousel-timeline .carousel-timeline-slide-indicator button {
++  width: 24px;
++  height: 24px;
++  margin: 0;
++  padding: 0;
++  border-radius: 50%;
++  background-color: #dadada;
++  transition: background-color 0.2s;
++}
++
++.carousel-timeline .carousel-timeline-slide-indicator button:disabled,
++.carousel-timeline .carousel-timeline-slide-indicator button:hover,
++.carousel-timeline .carousel-timeline-slide-indicator button:focus-visible {
++  background-color: var(--text-color);
++}
++
++.carousel-timeline .carousel-timeline-navigation-buttons {
++  position: absolute;
++  top: 50%;
++  transform: translateY(-50%);
++  left: 12px;
++  right: 12px;
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  z-index: 1;
++}
++
++/* stylelint-disable-next-line no-descending-specificity */
++.carousel-timeline .carousel-timeline-navigation-buttons button {
++  position: relative;
++  width: 44px;
++  height: 44px;
++  margin: 0;
++  border-radius: 50%;
++  padding: 0;
++  background-color: rgb(19 19 19 / 25%);
++  transition: background-color 0.2s;
++}
++
++.carousel-timeline .carousel-timeline-navigation-buttons button:hover,
++.carousel-timeline .carousel-timeline-navigation-buttons button:focus-visible {
++  background-color: rgb(19 19 19 / 75%);
++}
++
++.carousel-timeline .carousel-timeline-navigation-buttons button::after {
++  display: block;
++  content: '';
++  border: 2px solid;
++  border-bottom: 0;
++  border-left: 0;
++  height: 12px;
++  width: 12px;
++  position: absolute;
++  top: 50%;
++  left: calc(50% + 2px);
++  transform: translate(-50%, -50%) rotate(-135deg);
++}
++
++.carousel-timeline .carousel-timeline-navigation-buttons button.slide-next::after {
++  transform: translate(-50%, -50%) rotate(45deg);
++  left: calc(50% - 2px);
++}
++
++@media (width >= 600px) {
++  .carousel-timeline .carousel-timeline-navigation-buttons {
++    left: 24px;
++    right: 24px;
++  }
++
++  .carousel-timeline .carousel-timeline-slide .carousel-timeline-slide-content {
++    --slide-content-width: calc((100% - 184px) / 2);
++
++    margin: 92px;
++  }
++
++  .carousel-timeline .carousel-timeline-slide .carousel-timeline-slide-content[data-align='justify'] {
++    --slide-content-width: auto;
++  }
++}
+diff --git a/blocks/carousel-timeline/carousel-timeline.js b/blocks/carousel-timeline/carousel-timeline.js
+new file mode 100644
+index 0000000..469a474
+--- /dev/null
++++ b/blocks/carousel-timeline/carousel-timeline.js
+@@ -0,0 +1,152 @@
++import { moveInstrumentation } from '../../scripts/scripts.js';
++import { fetchPlaceholders } from '../../scripts/placeholders.js';
++
++function updateActiveSlide(slide) {
++  const block = slide.closest('.carousel-timeline');
++  const slideIndex = parseInt(slide.dataset.slideIndex, 10);
++  block.dataset.activeSlide = slideIndex;
++
++  const slides = block.querySelectorAll('.carousel-timeline-slide');
++
++  slides.forEach((aSlide, idx) => {
++    aSlide.setAttribute('aria-hidden', idx !== slideIndex);
++    aSlide.querySelectorAll('a').forEach((link) => {
++      if (idx !== slideIndex) {
++        link.setAttribute('tabindex', '-1');
++      } else {
++        link.removeAttribute('tabindex');
++      }
++    });
++  });
++
++  const indicators = block.querySelectorAll('.carousel-timeline-slide-indicator');
++  indicators.forEach((indicator, idx) => {
++    if (idx !== slideIndex) {
++      indicator.querySelector('button').removeAttribute('disabled');
++    } else {
++      indicator.querySelector('button').setAttribute('disabled', 'true');
++    }
++  });
++}
++
++export function showSlide(block, slideIndex = 0, behavior = 'smooth') {
++  const slides = block.querySelectorAll('.carousel-timeline-slide');
++  let realSlideIndex = slideIndex < 0 ? slides.length - 1 : slideIndex;
++  if (slideIndex >= slides.length) realSlideIndex = 0;
++  const activeSlide = slides[realSlideIndex];
++
++  activeSlide.querySelectorAll('a').forEach((link) => link.removeAttribute('tabindex'));
++  block.querySelector('.carousel-timeline-slides').scrollTo({
++    top: 0,
++    left: activeSlide.offsetLeft,
++    behavior,
++  });
++}
++
++function bindEvents(block) {
++  const slideIndicators = block.querySelector('.carousel-timeline-slide-indicators');
++  if (!slideIndicators) return;
++
++  slideIndicators.querySelectorAll('button').forEach((button) => {
++    button.addEventListener('click', (e) => {
++      const slideIndicator = e.currentTarget.parentElement;
++      showSlide(block, parseInt(slideIndicator.dataset.targetSlide, 10));
++    });
++  });
++
++  block.querySelector('.slide-prev').addEventListener('click', () => {
++    showSlide(block, parseInt(block.dataset.activeSlide, 10) - 1);
++  });
++  block.querySelector('.slide-next').addEventListener('click', () => {
++    showSlide(block, parseInt(block.dataset.activeSlide, 10) + 1);
++  });
++
++  const slideObserver = new IntersectionObserver((entries) => {
++    entries.forEach((entry) => {
++      if (entry.isIntersecting) updateActiveSlide(entry.target);
++    });
++  }, { threshold: 0.5 });
++  block.querySelectorAll('.carousel-timeline-slide').forEach((slide) => {
++    slideObserver.observe(slide);
++  });
++}
++
++function createSlide(row, slideIndex, carouselId) {
++  const slide = document.createElement('li');
++  slide.dataset.slideIndex = slideIndex;
++  slide.setAttribute('id', `carousel-timeline-${carouselId}-slide-${slideIndex}`);
++  slide.classList.add('carousel-timeline-slide');
++
++  row.querySelectorAll(':scope > div').forEach((column, colIdx) => {
++    column.classList.add(`carousel-timeline-slide-${colIdx === 0 ? 'image' : 'content'}`);
++    slide.append(column);
++  });
++
++  const labeledBy = slide.querySelector('h1, h2, h3, h4, h5, h6');
++  if (labeledBy) {
++    slide.setAttribute('aria-labelledby', labeledBy.getAttribute('id'));
++  }
++
++  return slide;
++}
++
++let carouselId = 0;
++export default async function decorate(block) {
++  carouselId += 1;
++  block.setAttribute('id', `carousel-timeline-${carouselId}`);
++  const rows = block.querySelectorAll(':scope > div');
++  const isSingleSlide = rows.length < 2;
++
++  const placeholders = await fetchPlaceholders();
++
++  block.setAttribute('role', 'region');
++  block.setAttribute('aria-roledescription', placeholders.carousel || 'Carousel');
++
++  const container = document.createElement('div');
++  container.classList.add('carousel-timeline-slides-container');
++
++  const slidesWrapper = document.createElement('ul');
++  slidesWrapper.classList.add('carousel-timeline-slides');
++  block.prepend(slidesWrapper);
++
++  let slideIndicators;
++  if (!isSingleSlide) {
++    const slideIndicatorsNav = document.createElement('nav');
++    slideIndicatorsNav.setAttribute('aria-label', placeholders.carouselSlideControls || 'Carousel Slide Controls');
++    slideIndicators = document.createElement('ol');
++    slideIndicators.classList.add('carousel-timeline-slide-indicators');
++    slideIndicatorsNav.append(slideIndicators);
++    block.append(slideIndicatorsNav);
++
++    const slideNavButtons = document.createElement('div');
++    slideNavButtons.classList.add('carousel-timeline-navigation-buttons');
++    slideNavButtons.innerHTML = `
++      <button type="button" class= "slide-prev" aria-label="${placeholders.previousSlide || 'Previous Slide'}"></button>
++      <button type="button" class="slide-next" aria-label="${placeholders.nextSlide || 'Next Slide'}"></button>
++    `;
++
++    container.append(slideNavButtons);
++  }
++
++  rows.forEach((row, idx) => {
++    const slide = createSlide(row, idx, carouselId);
++    moveInstrumentation(row, slide);
++    slidesWrapper.append(slide);
++
++    if (slideIndicators) {
++      const indicator = document.createElement('li');
++      indicator.classList.add('carousel-timeline-slide-indicator');
++      indicator.dataset.targetSlide = idx;
++      indicator.innerHTML = `<button type="button" aria-label="${placeholders.showSlide || 'Show Slide'} ${idx + 1} ${placeholders.of || 'of'} ${rows.length}"></button>`;
++      slideIndicators.append(indicator);
++    }
++    row.remove();
++  });
++
++  container.append(slidesWrapper);
++  block.prepend(container);
++
++  if (!isSingleSlide) {
++    bindEvents(block);
++  }
++}
+diff --git a/blocks/carousel-timeline/metadata.json b/blocks/carousel-timeline/metadata.json
+new file mode 100644
+index 0000000..72f42f4
+--- /dev/null
++++ b/blocks/carousel-timeline/metadata.json
+@@ -0,0 +1,40 @@
++{
++  "variantName": "carousel-timeline",
++  "baseBlock": "carousel",
++  "version": "1.0.0",
++  "created": "2026-04-02T16:25:00.000Z",
++  "sourceContext": {
++    "originUrl": "https://www.genpact.com/about-us",
++    "originPage": "Corporate about us page",
++    "blockPosition": "middle"
++  },
++  "visualCharacteristics": {
++    "colorScheme": "dark",
++    "density": "spacious",
++    "purpose": "timeline-carousel",
++    "imagePattern": "noimg",
++    "structure": "year + description (navigable timeline)"
++  },
++  "contentPattern": {
++    "structure": "year + description (navigable timeline)",
++    "buttonCount": 0,
++    "imageCount": 0
++  },
++  "reuseGuidance": {
++    "suitableFor": [
++      "Company history timelines",
++      "Year-based milestone displays",
++      "Chronological event carousels"
++    ],
++    "notSuitableFor": [
++      "Image-based carousels",
++      "Product showcases",
++      "Testimonial sliders"
++    ]
++  },
++  "usage": {
++    "pagesUsing": ["/about-us"],
++    "reuseCount": 1,
++    "lastUsed": "2026-04-02T16:25:00.000Z"
++  }
++}
+diff --git a/blocks/columns-promo/_columns-promo.json b/blocks/columns-promo/_columns-promo.json
+new file mode 100644
+index 0000000..e4c7f2b
+--- /dev/null
++++ b/blocks/columns-promo/_columns-promo.json
+@@ -0,0 +1,57 @@
++{
++  "definitions": [
++    {
++      "title": "Columns Promo",
++      "id": "columns-promo",
++      "plugins": {
++        "xwalk": {
++          "page": {
++            "resourceType": "core/franklin/components/columns/v1/columns",
++            "template": {
++              "columns": "2",
++              "rows": "1"
++            }
++          }
++        }
++      }
++    }
++  ],
++  "models": [
++    {
++      "id": "columns-promo",
++      "fields": [
++        {
++          "component": "text",
++          "valueType": "number",
++          "name": "columns",
++          "value": "",
++          "label": "Columns"
++        },
++        {
++          "component": "text",
++          "valueType": "number",
++          "name": "rows",
++          "value": "",
++          "label": "Rows"
++        }
++      ]
++    }
++  ],
++  "filters": [
++    {
++      "id": "columns-promo",
++      "components": [
++        "column"
++      ]
++    },
++    {
++      "id": "column",
++      "components": [
++        "text",
++        "image",
++        "button",
++        "title"
++      ]
++    }
++  ]
++}
+diff --git a/blocks/columns-promo/columns-promo.css b/blocks/columns-promo/columns-promo.css
+new file mode 100644
+index 0000000..6e25815
+--- /dev/null
++++ b/blocks/columns-promo/columns-promo.css
+@@ -0,0 +1,33 @@
++.columns-promo > div {
++  display: flex;
++  flex-direction: column;
++}
++
++.columns-promo img {
++  width: 100%;
++}
++
++.columns-promo > div > div {
++  order: 1;
++}
++
++.columns-promo > div > .columns-promo-img-col {
++  order: 0;
++}
++
++.columns-promo > div > .columns-promo-img-col img {
++  display: block;
++}
++
++@media (width >= 900px) {
++  .columns-promo > div {
++    align-items: center;
++    flex-direction: unset;
++    gap: 24px;
++  }
++
++  .columns-promo > div > div {
++    flex: 1;
++    order: unset;
++  }
++}
+diff --git a/blocks/columns-promo/columns-promo.js b/blocks/columns-promo/columns-promo.js
+new file mode 100644
+index 0000000..54bb322
+--- /dev/null
++++ b/blocks/columns-promo/columns-promo.js
+@@ -0,0 +1,18 @@
++export default function decorate(block) {
++  const cols = [...block.firstElementChild.children];
++  block.classList.add(`columns-promo-${cols.length}-cols`);
++
++  // setup image columns
++  [...block.children].forEach((row) => {
++    [...row.children].forEach((col) => {
++      const pic = col.querySelector('picture');
++      if (pic) {
++        const picWrapper = pic.closest('div');
++        if (picWrapper && picWrapper.children.length === 1) {
++          // picture is only content in column
++          picWrapper.classList.add('columns-promo-img-col');
++        }
++      }
++    });
++  });
++}
+diff --git a/blocks/columns-promo/metadata.json b/blocks/columns-promo/metadata.json
+new file mode 100644
+index 0000000..92b53bd
+--- /dev/null
++++ b/blocks/columns-promo/metadata.json
+@@ -0,0 +1,40 @@
++{
++  "variantName": "columns-promo",
++  "baseBlock": "columns",
++  "version": "1.0.0",
++  "created": "2026-04-02T16:25:00.000Z",
++  "sourceContext": {
++    "originUrl": "https://www.genpact.com/about-us",
++    "originPage": "Corporate about us page",
++    "blockPosition": "bottom"
++  },
++  "visualCharacteristics": {
++    "colorScheme": "dark",
++    "density": "spacious",
++    "purpose": "promo-columns",
++    "imagePattern": "logo-right",
++    "structure": "heading + description + CTA + image"
++  },
++  "contentPattern": {
++    "structure": "heading + description + CTA + image",
++    "buttonCount": 1,
++    "imageCount": 1
++  },
++  "reuseGuidance": {
++    "suitableFor": [
++      "Promotional 50/50 teasers with CTA",
++      "Featured content with image and action",
++      "Product/service highlight sections"
++    ],
++    "notSuitableFor": [
++      "Text-only column layouts",
++      "Multi-column feature grids",
++      "Image gallery layouts"
++    ]
++  },
++  "usage": {
++    "pagesUsing": ["/about-us"],
++    "reuseCount": 1,
++    "lastUsed": "2026-04-02T16:25:00.000Z"
++  }
++}
+diff --git a/blocks/columns-wayfinder/_columns-wayfinder.json b/blocks/columns-wayfinder/_columns-wayfinder.json
+new file mode 100644
+index 0000000..bf897c4
+--- /dev/null
++++ b/blocks/columns-wayfinder/_columns-wayfinder.json
+@@ -0,0 +1,57 @@
++{
++  "definitions": [
++    {
++      "title": "Columns Wayfinder",
++      "id": "columns-wayfinder",
++      "plugins": {
++        "xwalk": {
++          "page": {
++            "resourceType": "core/franklin/components/columns/v1/columns",
++            "template": {
++              "columns": "2",
++              "rows": "1"
++            }
++          }
++        }
++      }
++    }
++  ],
++  "models": [
++    {
++      "id": "columns-wayfinder",
++      "fields": [
++        {
++          "component": "text",
++          "valueType": "number",
++          "name": "columns",
++          "value": "",
++          "label": "Columns"
++        },
++        {
++          "component": "text",
++          "valueType": "number",
++          "name": "rows",
++          "value": "",
++          "label": "Rows"
++        }
++      ]
++    }
++  ],
++  "filters": [
++    {
++      "id": "columns-wayfinder",
++      "components": [
++        "column"
++      ]
++    },
++    {
++      "id": "column",
++      "components": [
++        "text",
++        "image",
++        "button",
++        "title"
++      ]
++    }
++  ]
++}
+diff --git a/blocks/columns-wayfinder/columns-wayfinder.css b/blocks/columns-wayfinder/columns-wayfinder.css
+new file mode 100644
+index 0000000..501e090
+--- /dev/null
++++ b/blocks/columns-wayfinder/columns-wayfinder.css
+@@ -0,0 +1,33 @@
++.columns-wayfinder > div {
++  display: flex;
++  flex-direction: column;
++}
++
++.columns-wayfinder img {
++  width: 100%;
++}
++
++.columns-wayfinder > div > div {
++  order: 1;
++}
++
++.columns-wayfinder > div > .columns-wayfinder-img-col {
++  order: 0;
++}
++
++.columns-wayfinder > div > .columns-wayfinder-img-col img {
++  display: block;
++}
++
++@media (width >= 900px) {
++  .columns-wayfinder > div {
++    align-items: center;
++    flex-direction: unset;
++    gap: 24px;
++  }
++
++  .columns-wayfinder > div > div {
++    flex: 1;
++    order: unset;
++  }
++}
+diff --git a/blocks/columns-wayfinder/columns-wayfinder.js b/blocks/columns-wayfinder/columns-wayfinder.js
+new file mode 100644
+index 0000000..51e1e60
+--- /dev/null
++++ b/blocks/columns-wayfinder/columns-wayfinder.js
+@@ -0,0 +1,18 @@
++export default function decorate(block) {
++  const cols = [...block.firstElementChild.children];
++  block.classList.add(`columns-wayfinder-${cols.length}-cols`);
++
++  // setup image columns
++  [...block.children].forEach((row) => {
++    [...row.children].forEach((col) => {
++      const pic = col.querySelector('picture');
++      if (pic) {
++        const picWrapper = pic.closest('div');
++        if (picWrapper && picWrapper.children.length === 1) {
++          // picture is only content in column
++          picWrapper.classList.add('columns-wayfinder-img-col');
++        }
++      }
++    });
++  });
++}
+diff --git a/blocks/columns-wayfinder/metadata.json b/blocks/columns-wayfinder/metadata.json
+new file mode 100644
+index 0000000..c90198f
+--- /dev/null
++++ b/blocks/columns-wayfinder/metadata.json
+@@ -0,0 +1,40 @@
++{
++  "variantName": "columns-wayfinder",
++  "baseBlock": "columns",
++  "version": "1.0.0",
++  "created": "2026-04-02T16:25:00.000Z",
++  "sourceContext": {
++    "originUrl": "https://www.genpact.com/about-us",
++    "originPage": "Corporate about us page",
++    "blockPosition": "middle"
++  },
++  "visualCharacteristics": {
++    "colorScheme": "dark",
++    "density": "spacious",
++    "purpose": "wayfinder-columns",
++    "imagePattern": "noimg",
++    "structure": "heading + description (3 columns)"
++  },
++  "contentPattern": {
++    "structure": "heading + description (3 columns)",
++    "buttonCount": 0,
++    "imageCount": 0
++  },
++  "reuseGuidance": {
++    "suitableFor": [
++      "Text-only 3-column layouts",
++      "Value proposition columns",
++      "Feature highlight text blocks"
++    ],
++    "notSuitableFor": [
++      "Image-heavy column layouts",
++      "Two-column text-image splits",
++      "Column layouts with CTAs"
++    ]
++  },
++  "usage": {
++    "pagesUsing": ["/about-us"],
++    "reuseCount": 1,
++    "lastUsed": "2026-04-02T16:25:00.000Z"
++  }
++}
+diff --git a/blocks/hero-corporate/_hero-corporate.json b/blocks/hero-corporate/_hero-corporate.json
+new file mode 100644
+index 0000000..bc6a96f
+--- /dev/null
++++ b/blocks/hero-corporate/_hero-corporate.json
+@@ -0,0 +1,48 @@
++{
++  "definitions": [
++    {
++      "title": "Hero Corporate",
++      "id": "hero-corporate",
++      "plugins": {
++        "xwalk": {
++          "page": {
++            "resourceType": "core/franklin/components/block/v1/block",
++            "template": {
++              "name": "Hero Corporate",
++              "model": "hero-corporate"
++            }
++          }
++        }
++      }
++    }
++  ],
++  "models": [
++    {
++      "id": "hero-corporate",
++      "fields": [
++        {
++          "component": "reference",
++          "valueType": "string",
++          "name": "image",
++          "label": "Image",
++          "multi": false
++        },
++        {
++          "component": "text",
++          "valueType": "string",
++          "name": "imageAlt",
++          "label": "Alt",
++          "value": ""
++        },
++        {
++          "component": "richtext",
++          "name": "text",
++          "value": "",
++          "label": "Text",
++          "valueType": "string"
++        }
++      ]
++    }
++  ],
++  "filters": []
++}
+diff --git a/blocks/hero-corporate/hero-corporate.css b/blocks/hero-corporate/hero-corporate.css
+new file mode 100644
+index 0000000..c6c5d71
+--- /dev/null
++++ b/blocks/hero-corporate/hero-corporate.css
+@@ -0,0 +1,37 @@
++.hero-corporate-container .hero-corporate-wrapper {
++  max-width: unset;
++  padding: 0;
++}
++
++.hero-corporate {
++  position: relative;
++  padding: 40px 24px;
++  min-height: 300px;
++}
++
++.hero-corporate h1 {
++  max-width: 1200px;
++  margin-left: auto;
++  margin-right: auto;
++  color: var(--background-color);
++}
++
++.hero-corporate picture {
++  position: absolute;
++  z-index: -1;
++  inset: 0;
++  object-fit: cover;
++  box-sizing: border-box;
++}
++
++.hero-corporate img {
++  object-fit: cover;
++  width: 100%;
++  height: 100%;
++}
++
++@media (width >= 900px) {
++  .hero-corporate {
++    padding: 40px 32px;
++  }
++}
+diff --git a/blocks/hero-corporate/hero-corporate.js b/blocks/hero-corporate/hero-corporate.js
+new file mode 100644
+index 0000000..457d2e9
+--- /dev/null
++++ b/blocks/hero-corporate/hero-corporate.js
+@@ -0,0 +1,3 @@
++export default function decorate(block) {
++  // Hero corporate - no JS decoration needed (CSS-only block)
++}
+diff --git a/blocks/hero-corporate/metadata.json b/blocks/hero-corporate/metadata.json
+new file mode 100644
+index 0000000..ebc666c
+--- /dev/null
++++ b/blocks/hero-corporate/metadata.json
+@@ -0,0 +1,40 @@
++{
++  "variantName": "hero-corporate",
++  "baseBlock": "hero",
++  "version": "1.0.0",
++  "created": "2026-04-02T16:25:00.000Z",
++  "sourceContext": {
++    "originUrl": "https://www.genpact.com/about-us",
++    "originPage": "Corporate about us page",
++    "blockPosition": "top"
++  },
++  "visualCharacteristics": {
++    "colorScheme": "dark",
++    "density": "spacious",
++    "purpose": "corporate-hero",
++    "imagePattern": "logo-right",
++    "structure": "eyebrow + heading + description + image"
++  },
++  "contentPattern": {
++    "structure": "eyebrow + heading + description + image",
++    "buttonCount": 0,
++    "imageCount": 1
++  },
++  "reuseGuidance": {
++    "suitableFor": [
++      "Corporate about pages",
++      "Company overview pages",
++      "Pages with 50/50 text-image hero layout"
++    ],
++    "notSuitableFor": [
++      "Product pages with full-width background images",
++      "Landing pages with CTA buttons",
++      "Blog post heroes"
++    ]
++  },
++  "usage": {
++    "pagesUsing": ["/about-us"],
++    "reuseCount": 1,
++    "lastUsed": "2026-04-02T16:25:00.000Z"
++  }
++}
+diff --git a/blocks/video-corporate/_video-corporate.json b/blocks/video-corporate/_video-corporate.json
+new file mode 100644
+index 0000000..a68ebe2
+--- /dev/null
++++ b/blocks/video-corporate/_video-corporate.json
+@@ -0,0 +1,71 @@
++{
++  "definitions": [
++    {
++      "title": "Video Corporate",
++      "id": "video-corporate",
++      "plugins": {
++        "xwalk": {
++          "page": {
++            "resourceType": "core/franklin/components/block/v1/block",
++            "template": {
++              "name": "Video Corporate",
++              "model": "video-corporate",
++              "filter": "video-corporate"
++            }
++          }
++        }
++      }
++    }
++  ],
++  "models": [
++    {
++      "id": "video-corporate",
++      "fields": [
++        {
++          "component": "aem-content",
++          "valueType": "string",
++          "name": "uri",
++          "label": "Video"
++        },
++        {
++          "component": "multiselect",
++          "name": "classes",
++          "value": "",
++          "label": "Options",
++          "valueType": "string",
++          "options": [
++            {
++              "name": "Auto Play",
++              "children": [
++                {
++                  "name": "AutoPlay",
++                  "value": "autoplay"
++                }
++              ]
++            }
++          ]
++        },
++        {
++          "component": "reference",
++          "valueType": "string",
++          "name": "placeholder_image",
++          "label": "Placeholder Image",
++          "multi": true
++        },
++        {
++          "component": "text",
++          "valueType": "string",
++          "name": "placeholder_imageAlt",
++          "value": "",
++          "label": "Placeholder Image Alt Text"
++        }
++      ]
++    }
++  ],
++  "filters": [
++    {
++      "id": "video-corporate",
++      "components": []
++    }
++  ]
++}
+diff --git a/blocks/video-corporate/metadata.json b/blocks/video-corporate/metadata.json
+new file mode 100644
+index 0000000..f91716c
+--- /dev/null
++++ b/blocks/video-corporate/metadata.json
+@@ -0,0 +1,40 @@
++{
++  "variantName": "video-corporate",
++  "baseBlock": "video",
++  "version": "1.0.0",
++  "created": "2026-04-02T16:25:00.000Z",
++  "sourceContext": {
++    "originUrl": "https://www.genpact.com/about-us",
++    "originPage": "Corporate about us page",
++    "blockPosition": "middle"
++  },
++  "visualCharacteristics": {
++    "colorScheme": "dark",
++    "density": "spacious",
++    "purpose": "corporate-video",
++    "imagePattern": "video-poster",
++    "structure": "video player with poster"
++  },
++  "contentPattern": {
++    "structure": "video player with poster",
++    "buttonCount": 0,
++    "imageCount": 1
++  },
++  "reuseGuidance": {
++    "suitableFor": [
++      "Corporate overview videos",
++      "About us page videos",
++      "Company brand videos"
++    ],
++    "notSuitableFor": [
++      "Product demo videos",
++      "Background ambient videos",
++      "Tutorial videos"
++    ]
++  },
++  "usage": {
++    "pagesUsing": ["/about-us"],
++    "reuseCount": 1,
++    "lastUsed": "2026-04-02T16:25:00.000Z"
++  }
++}
+diff --git a/blocks/video-corporate/video-corporate.css b/blocks/video-corporate/video-corporate.css
+new file mode 100644
+index 0000000..d818448
+--- /dev/null
++++ b/blocks/video-corporate/video-corporate.css
+@@ -0,0 +1,71 @@
++.video-corporate {
++  text-align: center;
++  max-width: 900px;
++  margin: 24px auto;
++}
++
++.video-corporate[data-embed-loaded='false']:not(.placeholder) {
++  /* reserve an approximate space to avoid extensive layout shifts */
++  aspect-ratio: 16 / 9;
++}
++
++.video-corporate > div {
++  display: flex;
++  justify-content: center;
++}
++
++.video-corporate video {
++  max-width: 100%;
++}
++
++.video-corporate .video-corporate-placeholder {
++  width: 100%;
++  aspect-ratio: 16 / 9;
++  position: relative;
++}
++
++.video-corporate .video-corporate-placeholder > * {
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  position: absolute;
++  inset: 0;
++}
++
++.video-corporate[data-embed-loaded='true'] .video-corporate-placeholder,
++.video-corporate[data-embed-loaded='false'] .video-corporate-placeholder + * {
++  visibility: hidden;
++  height: 0;
++  width: 0;
++}
++
++.video-corporate .video-corporate-placeholder picture img {
++  width: 100%;
++  height: 100%;
++  object-fit: cover;
++}
++
++.video-corporate .video-corporate-placeholder-play button {
++  position: relative;
++  display: block;
++  width: 44px;
++  height: 44px;
++  border-radius: 50%;
++  outline: 2px solid;
++  padding: 0;
++}
++
++.video-corporate .video-corporate-placeholder-play button::before {
++  content: '';
++  display: block;
++  box-sizing: border-box;
++  position: absolute;
++  width: 0;
++  height: 24px;
++  border-top: 12px solid transparent;
++  border-bottom: 12px solid transparent;
++  border-left: 18px solid;
++  top: 50%;
++  left: calc(50% + 2px);
++  transform: translate(-50%, -50%);
++}
+diff --git a/blocks/video-corporate/video-corporate.js b/blocks/video-corporate/video-corporate.js
+new file mode 100644
+index 0000000..334705e
+--- /dev/null
++++ b/blocks/video-corporate/video-corporate.js
+@@ -0,0 +1,144 @@
++/*
++ * Video Corporate Block
++ * Show a video referenced by a link
++ */
++
++const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
++
++function embedYoutube(url, autoplay, background) {
++  const usp = new URLSearchParams(url.search);
++  let suffix = '';
++  if (background || autoplay) {
++    const suffixParams = {
++      autoplay: autoplay ? '1' : '0',
++      mute: background ? '1' : '0',
++      controls: background ? '0' : '1',
++      disablekb: background ? '1' : '0',
++      loop: background ? '1' : '0',
++      playsinline: background ? '1' : '0',
++    };
++    suffix = `&${Object.entries(suffixParams).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`;
++  }
++  let vid = usp.get('v') ? encodeURIComponent(usp.get('v')) : '';
++  const embed = url.pathname;
++  if (url.origin.includes('youtu.be')) {
++    [, vid] = url.pathname.split('/');
++  }
++
++  const temp = document.createElement('div');
++  temp.innerHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
++      <iframe src="https://www.youtube.com${vid ? `/embed/${vid}?rel=0&v=${vid}${suffix}` : embed}" style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;"
++      allow="autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope; picture-in-picture" allowfullscreen="" scrolling="no" title="Content from Youtube" loading="lazy"></iframe>
++    </div>`;
++  return temp.children.item(0);
++}
++
++function embedVimeo(url, autoplay, background) {
++  const [, video] = url.pathname.split('/');
++  let suffix = '';
++  if (background || autoplay) {
++    const suffixParams = {
++      autoplay: autoplay ? '1' : '0',
++      background: background ? '1' : '0',
++    };
++    suffix = `?${Object.entries(suffixParams).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`;
++  }
++  const temp = document.createElement('div');
++  temp.innerHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
++      <iframe src="https://player.vimeo.com/video/${video}${suffix}"
++      style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;"
++      frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
++      title="Content from Vimeo" loading="lazy"></iframe>
++    </div>`;
++  return temp.children.item(0);
++}
++
++function getVideoElement(source, autoplay, background) {
++  const video = document.createElement('video');
++  video.setAttribute('controls', '');
++  if (autoplay) video.setAttribute('autoplay', '');
++  if (background) {
++    video.setAttribute('loop', '');
++    video.setAttribute('playsinline', '');
++    video.removeAttribute('controls');
++    video.addEventListener('canplay', () => {
++      video.muted = true;
++      if (autoplay) video.play();
++    });
++  }
++
++  const sourceEl = document.createElement('source');
++  sourceEl.setAttribute('src', source);
++  sourceEl.setAttribute('type', `video/${source.split('.').pop()}`);
++  video.append(sourceEl);
++
++  return video;
++}
++
++const loadVideoEmbed = (block, link, autoplay, background) => {
++  if (block.dataset.embedLoaded === 'true') {
++    return;
++  }
++  const url = new URL(link);
++
++  const isYoutube = link.includes('youtube') || link.includes('youtu.be');
++  const isVimeo = link.includes('vimeo');
++
++  if (isYoutube) {
++    const embedWrapper = embedYoutube(url, autoplay, background);
++    block.append(embedWrapper);
++    embedWrapper.querySelector('iframe').addEventListener('load', () => {
++      block.dataset.embedLoaded = true;
++    });
++  } else if (isVimeo) {
++    const embedWrapper = embedVimeo(url, autoplay, background);
++    block.append(embedWrapper);
++    embedWrapper.querySelector('iframe').addEventListener('load', () => {
++      block.dataset.embedLoaded = true;
++    });
++  } else {
++    const videoEl = getVideoElement(link, autoplay, background);
++    block.append(videoEl);
++    videoEl.addEventListener('canplay', () => {
++      block.dataset.embedLoaded = true;
++    });
++  }
++};
++
++export default async function decorate(block) {
++  const placeholder = block.querySelector('picture');
++  const link = block.querySelector('a').href;
++  block.textContent = '';
++  block.dataset.embedLoaded = false;
++
++  const autoplay = block.classList.contains('autoplay');
++  if (placeholder) {
++    block.classList.add('placeholder');
++    const wrapper = document.createElement('div');
++    wrapper.className = 'video-corporate-placeholder';
++    wrapper.append(placeholder);
++
++    if (!autoplay) {
++      wrapper.insertAdjacentHTML(
++        'beforeend',
++        '<div class="video-corporate-placeholder-play"><button type="button" title="Play"></button></div>',
++      );
++      wrapper.addEventListener('click', () => {
++        wrapper.remove();
++        loadVideoEmbed(block, link, true, false);
++      });
++    }
++    block.append(wrapper);
++  }
++
++  if (!placeholder || autoplay) {
++    const observer = new IntersectionObserver((entries) => {
++      if (entries.some((e) => e.isIntersecting)) {
++        observer.disconnect();
++        const playOnLoad = autoplay && !prefersReducedMotion.matches;
++        loadVideoEmbed(block, link, playOnLoad, autoplay);
++      }
++    });
++    observer.observe(block);
++  }
++}
+diff --git a/component-definition.json b/component-definition.json
+index 7d2c3e8..2c02491 100644
+--- a/component-definition.json
++++ b/component-definition.json
+@@ -114,6 +114,36 @@
+             }
+           }
+         },
++        {
++          "title": "Cards Subnav",
++          "id": "cards-subnav",
++          "plugins": {
++            "xwalk": {
++              "page": {
++                "resourceType": "core/franklin/components/block/v1/block",
++                "template": {
++                  "name": "Cards Subnav",
++                  "filter": "cards-subnav"
++                }
++              }
++            }
++          }
++        },
++        {
++          "title": "Card",
++          "id": "card",
++          "plugins": {
++            "xwalk": {
++              "page": {
++                "resourceType": "core/franklin/components/block/v1/block/item",
++                "template": {
++                  "name": "Card",
++                  "model": "card"
++                }
++              }
++            }
++          }
++        },
+         {
+           "title": "Cards",
+           "id": "cards",
+@@ -144,6 +174,66 @@
+             }
+           }
+         },
++        {
++          "title": "Carousel Stats",
++          "id": "carousel-stats",
++          "plugins": {
++            "xwalk": {
++              "page": {
++                "resourceType": "core/franklin/components/block/v1/block",
++                "template": {
++                  "name": "Carousel Stats",
++                  "filter": "carousel-stats"
++                }
++              }
++            }
++          }
++        },
++        {
++          "title": "Carousel Stats Slide",
++          "id": "carousel-stats-item",
++          "plugins": {
++            "xwalk": {
++              "page": {
++                "resourceType": "core/franklin/components/block/v1/block/item",
++                "template": {
++                  "name": "Carousel Stats Slide",
++                  "model": "carousel-stats-item"
++                }
++              }
++            }
++          }
++        },
++        {
++          "title": "Carousel Timeline",
++          "id": "carousel-timeline",
++          "plugins": {
++            "xwalk": {
++              "page": {
++                "resourceType": "core/franklin/components/block/v1/block",
++                "template": {
++                  "name": "Carousel Timeline",
++                  "filter": "carousel-timeline"
++                }
++              }
++            }
++          }
++        },
++        {
++          "title": "Carousel Timeline Slide",
++          "id": "carousel-timeline-item",
++          "plugins": {
++            "xwalk": {
++              "page": {
++                "resourceType": "core/franklin/components/block/v1/block/item",
++                "template": {
++                  "name": "Carousel Timeline Slide",
++                  "model": "carousel-timeline-item"
++                }
++              }
++            }
++          }
++        },
+         {
+           "title": "Carousel",
+           "id": "carousel",
+@@ -153,7 +243,6 @@
+                 "resourceType": "core/franklin/components/block/v1/block",
+                 "template": {
+                   "name": "Carousel",
+-                  "model": "carousel",
+                   "filter": "carousel"
+                 }
+               }
+@@ -175,6 +264,36 @@
+             }
+           }
+         },
++        {
++          "title": "Columns Promo",
++          "id": "columns-promo",
++          "plugins": {
++            "xwalk": {
++              "page": {
++                "resourceType": "core/franklin/components/columns/v1/columns",
++                "template": {
++                  "columns": "2",
++                  "rows": "1"
++                }
++              }
++            }
++          }
++        },
++        {
++          "title": "Columns Wayfinder",
++          "id": "columns-wayfinder",
++          "plugins": {
++            "xwalk": {
++              "page": {
++                "resourceType": "core/franklin/components/columns/v1/columns",
++                "template": {
++                  "columns": "2",
++                  "rows": "1"
++                }
++              }
++            }
++          }
++        },
+         {
+           "title": "Columns",
+           "id": "columns",
+@@ -235,6 +354,21 @@
+             }
+           }
+         },
++        {
++          "title": "Hero Corporate",
++          "id": "hero-corporate",
++          "plugins": {
++            "xwalk": {
++              "page": {
++                "resourceType": "core/franklin/components/block/v1/block",
++                "template": {
++                  "name": "Hero Corporate",
++                  "model": "hero-corporate"
++                }
++              }
++            }
++          }
++        },
+         {
+           "title": "Hero",
+           "id": "hero",
+@@ -414,6 +548,22 @@
+             }
+           }
+         },
++        {
++          "title": "Video Corporate",
++          "id": "video-corporate",
++          "plugins": {
++            "xwalk": {
++              "page": {
++                "resourceType": "core/franklin/components/block/v1/block",
++                "template": {
++                  "name": "Video Corporate",
++                  "model": "video-corporate",
++                  "filter": "video-corporate"
++                }
++              }
++            }
++          }
++        },
+         {
+           "title": "Video",
+           "id": "video",
+diff --git a/component-filters.json b/component-filters.json
+index 428df18..bec9544 100644
+--- a/component-filters.json
++++ b/component-filters.json
+@@ -33,18 +33,66 @@
+       "accordion-item"
+     ]
+   },
++  {
++    "id": "cards-subnav",
++    "components": [
++      "card"
++    ]
++  },
+   {
+     "id": "cards",
+     "components": [
+       "card"
+     ]
+   },
++  {
++    "id": "carousel-stats",
++    "components": [
++      "carousel-stats-item"
++    ]
++  },
++  {
++    "id": "carousel-timeline",
++    "components": [
++      "carousel-timeline-item"
++    ]
++  },
+   {
+     "id": "carousel",
+     "components": [
+       "carousel-item"
+     ]
+   },
++  {
++    "id": "columns-promo",
++    "components": [
++      "column"
++    ]
++  },
++  {
++    "id": "column",
++    "components": [
++      "text",
++      "image",
++      "button",
++      "title"
++    ]
++  },
++  {
++    "id": "columns-wayfinder",
++    "components": [
++      "column"
++    ]
++  },
++  {
++    "id": "column",
++    "components": [
++      "text",
++      "image",
++      "button",
++      "title"
++    ]
++  },
+   {
+     "id": "columns",
+     "components": [
+@@ -90,6 +138,10 @@
+       "tabs-item"
+     ]
+   },
++  {
++    "id": "video-corporate",
++    "components": []
++  },
+   {
+     "id": "video",
+     "components": []
+diff --git a/component-models.json b/component-models.json
+index 86ec2ca..f671cf5 100644
+--- a/component-models.json
++++ b/component-models.json
+@@ -179,6 +179,77 @@
+       }
+     ]
+   },
++  {
++    "id": "card",
++    "fields": [
++      {
++        "component": "reference",
++        "valueType": "string",
++        "name": "image",
++        "label": "Image",
++        "multi": false
++      },
++      {
++        "component": "richtext",
++        "name": "text",
++        "value": "",
++        "label": "Text",
++        "valueType": "string"
++      }
++    ]
++  },
++  {
++    "id": "carousel-stats-item",
++    "fields": [
++      {
++        "component": "reference",
++        "valueType": "string",
++        "name": "media_image",
++        "label": "Background Image",
++        "multi": false
++      },
++      {
++        "component": "text",
++        "valueType": "string",
++        "name": "media_imageAlt",
++        "value": "",
++        "label": "Background Alt"
++      },
++      {
++        "component": "richtext",
++        "name": "content_text",
++        "value": "",
++        "label": "Text",
++        "valueType": "string"
++      }
++    ]
++  },
++  {
++    "id": "carousel-timeline-item",
++    "fields": [
++      {
++        "component": "reference",
++        "valueType": "string",
++        "name": "media_image",
++        "label": "Background Image",
++        "multi": false
++      },
++      {
++        "component": "text",
++        "valueType": "string",
++        "name": "media_imageAlt",
++        "value": "",
++        "label": "Background Alt"
++      },
++      {
++        "component": "richtext",
++        "name": "content_text",
++        "value": "",
++        "label": "Text",
++        "valueType": "string"
++      }
++    ]
++  },
+   {
+     "id": "carousel-item",
+     "fields": [
+@@ -205,6 +276,44 @@
+       }
+     ]
+   },
++  {
++    "id": "columns-promo",
++    "fields": [
++      {
++        "component": "text",
++        "valueType": "number",
++        "name": "columns",
++        "value": "",
++        "label": "Columns"
++      },
++      {
++        "component": "text",
++        "valueType": "number",
++        "name": "rows",
++        "value": "",
++        "label": "Rows"
++      }
++    ]
++  },
++  {
++    "id": "columns-wayfinder",
++    "fields": [
++      {
++        "component": "text",
++        "valueType": "number",
++        "name": "columns",
++        "value": "",
++        "label": "Columns"
++      },
++      {
++        "component": "text",
++        "valueType": "number",
++        "name": "rows",
++        "value": "",
++        "label": "Rows"
++      }
++    ]
++  },
+   {
+     "id": "columns",
+     "fields": [
+@@ -275,6 +384,32 @@
+       }
+     ]
+   },
++  {
++    "id": "hero-corporate",
++    "fields": [
++      {
++        "component": "reference",
++        "valueType": "string",
++        "name": "image",
++        "label": "Image",
++        "multi": false
++      },
++      {
++        "component": "text",
++        "valueType": "string",
++        "name": "imageAlt",
++        "label": "Alt",
++        "value": ""
++      },
++      {
++        "component": "richtext",
++        "name": "text",
++        "value": "",
++        "label": "Text",
++        "valueType": "string"
++      }
++    ]
++  },
+   {
+     "id": "hero",
+     "fields": [
+@@ -567,6 +702,49 @@
+       }
+     ]
+   },
++  {
++    "id": "video-corporate",
++    "fields": [
++      {
++        "component": "aem-content",
++        "valueType": "string",
++        "name": "uri",
++        "label": "Video"
++      },
++      {
++        "component": "multiselect",
++        "name": "classes",
++        "value": "",
++        "label": "Options",
++        "valueType": "string",
++        "options": [
++          {
++            "name": "Auto Play",
++            "children": [
++              {
++                "name": "AutoPlay",
++                "value": "autoplay"
++              }
++            ]
++          }
++        ]
++      },
++      {
++        "component": "reference",
++        "valueType": "string",
++        "name": "placeholder_image",
++        "label": "Placeholder Image",
++        "multi": true
++      },
++      {
++        "component": "text",
++        "valueType": "string",
++        "name": "placeholder_imageAlt",
++        "value": "",
++        "label": "Placeholder Image Alt Text"
++      }
++    ]
++  },
+   {
+     "id": "video",
+     "fields": [
+diff --git a/head.html b/head.html
+index 35c8a46..3a8ac1a 100644
+--- a/head.html
++++ b/head.html
+@@ -1,4 +1,6 @@
+ <meta name="viewport" content="width=device-width, initial-scale=1"/>
++<link rel="preconnect" href="https://fonts.googleapis.com">
++<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <script src="/scripts/aem.js" type="module"></script>
+ <script src="/scripts/scripts.js" type="module"></script>
+ <link rel="stylesheet" href="/styles/styles.css"/>
+diff --git a/styles/fonts.css b/styles/fonts.css
+index 319c400..06f0b0f 100644
+--- a/styles/fonts.css
++++ b/styles/fonts.css
+@@ -1,36 +1,2 @@
+-/* stylelint-disable max-line-length */
+-@font-face {
+-  font-family: roboto-condensed;
+-  font-style: normal;
+-  font-weight: 700;
+-  font-display: swap;
+-  src: url('../fonts/roboto-condensed-bold.woff2') format('woff2');
+-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+-}
+-
+-@font-face {
+-  font-family: roboto;
+-  font-style: normal;
+-  font-weight: 700;
+-  font-display: swap;
+-  src: url('../fonts/roboto-bold.woff2') format('woff2');
+-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+-}
+-
+-@font-face {
+-  font-family: roboto;
+-  font-style: normal;
+-  font-weight: 500;
+-  font-display: swap;
+-  src: url('../fonts/roboto-medium.woff2') format('woff2');
+-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+-}
+-
+-@font-face {
+-  font-family: roboto;
+-  font-style: normal;
+-  font-weight: 400;
+-  font-display: swap;
+-  src: url('../fonts/roboto-regular.woff2') format('woff2');
+-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+-}
++/* Genpact Design System - Funnel Sans */
++@import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+diff --git a/styles/styles.css b/styles/styles.css
+index 68db210..05f4c1c 100644
+--- a/styles/styles.css
++++ b/styles/styles.css
+@@ -1,75 +1,88 @@
+ /*
+- * Copyright 2020 Adobe. All rights reserved.
+- * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License. You may obtain a copy
+- * of the License at http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software distributed under
+- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+- * OF ANY KIND, either express or implied. See the License for the specific language
+- * governing permissions and limitations under the License.
++ * Genpact Design System - Migrated from https://www.genpact.com
++ * Font: Funnel Sans | Dark theme with coral accent
+  */
+ 
+ :root {
+   /* colors */
+-  --background-color: white;
++  --background-color: rgb(22 25 22);
+   --light-color: #f8f8f8;
+-  --dark-color: #505050;
+-  --text-color: #131313;
+-  --link-color: #3b63fb;
+-  --link-hover-color: #1d3ecf;
+-  --overlay-background-color:lightgrey;
++  --dark-color: rgb(22 25 22);
++  --text-color: rgb(255 250 244);
++  --link-color: rgb(255 79 89);
++  --link-hover-color: rgb(255 120 127);
++  --overlay-background-color: rgb(0 0 0 / 50%);
++
++  /* genpact brand colors */
++  --accent-primary: rgb(255 79 89);
++  --accent-gold: rgb(255 173 40);
++  --accent-cream: rgb(255 242 223);
++  --text-warm-white: rgb(255 250 244);
+ 
+   /* fonts */
+-  --body-font-family: roboto, roboto-fallback, sans-serif;
+-  --heading-font-family: roboto-condensed, roboto-condensed-fallback, sans-serif;
++  --body-font-family: "Funnel Sans", funnel-sans-fallback, sans-serif;
++  --heading-font-family: "Funnel Sans", funnel-sans-fallback, sans-serif;
+ 
+   /* body sizes */
+-  --body-font-size-m: 22px;
+-  --body-font-size-s: 19px;
+-  --body-font-size-xs: 17px;
++  --body-font-size-m: 18px;
++  --body-font-size-s: 16px;
++  --body-font-size-xs: 14px;
++  --body-font-size-l: 24px;
+ 
+   /* heading sizes */
+-  --heading-font-size-xxl: 55px;
+-  --heading-font-size-xl: 44px;
+-  --heading-font-size-l: 34px;
+-  --heading-font-size-m: 27px;
++  --heading-font-size-xxl: 64px;
++  --heading-font-size-xl: 48px;
++  --heading-font-size-l: 36px;
++  --heading-font-size-m: 32px;
+   --heading-font-size-s: 24px;
+-  --heading-font-size-xs: 22px;
++  --heading-font-size-xs: 20px;
+ 
+   /* nav heights */
+   --nav-height: 64px;
+   --breadcrumbs-height: 34px;
+   --header-height: var(--nav-height);
+-}
+ 
+-/* fallback fonts */
+-@font-face {
+-  font-family: roboto-condensed-fallback;
+-  size-adjust: 88.82%;
+-  src: local('Arial');
++  /* spacing */
++  --spacing-xxl: 96px;
++  --spacing-xl: 64px;
++  --spacing-l: 48px;
++  --spacing-m: 32px;
++  --spacing-s: 24px;
++  --spacing-xs: 16px;
++  --spacing-xxs: 8px;
++
++  /* buttons */
++  --button-border-radius: 50px;
++  --button-padding: 10px 40px;
++  --button-font-size: 20px;
++  --button-font-weight: 500;
++  --button-text-transform: uppercase;
++  --button-letter-spacing: 0.6px;
++  --button-transition: background-color 0.3s, border-color 0.3s, color 0.3s;
++
++  /* transitions */
++  --transition-base: 0.3s ease;
++
++  /* layout */
++  --content-max-width: 1440px;
++  --section-max-width: 1200px;
+ }
+ 
++/* fallback font */
+ @font-face {
+-  font-family: roboto-fallback;
+-  size-adjust: 99.529%;
++  font-family: funnel-sans-fallback;
++  size-adjust: 100%;
+   src: local('Arial');
+ }
+ 
+ @media (width >= 900px) {
+   :root {
+-    /* body sizes */
+-    --body-font-size-m: 18px;
+-    --body-font-size-s: 16px;
+-    --body-font-size-xs: 14px;
+-
+-    /* heading sizes */
+-    --heading-font-size-xxl: 45px;
+-    --heading-font-size-xl: 36px;
+-    --heading-font-size-l: 28px;
+-    --heading-font-size-m: 22px;
+-    --heading-font-size-s: 20px;
+-    --heading-font-size-xs: 18px;
++    --heading-font-size-xxl: 64px;
++    --heading-font-size-xl: 48px;
++    --heading-font-size-l: 36px;
++    --heading-font-size-m: 32px;
++    --heading-font-size-s: 24px;
++    --heading-font-size-xs: 20px;
+   }
+ }
+ 
+@@ -80,7 +93,8 @@ body {
+   color: var(--text-color);
+   font-family: var(--body-font-family);
+   font-size: var(--body-font-size-m);
+-  line-height: 1.6;
++  line-height: 1.5;
++  -webkit-font-smoothing: antialiased;
+ }
+ 
+ body.appear {
+@@ -107,6 +121,7 @@ footer .footer[data-block-status="loaded"] {
+   }
+ }
+ 
++/* headings */
+ h1,
+ h2,
+ h3,
+@@ -116,9 +131,10 @@ h6 {
+   margin-top: 0.8em;
+   margin-bottom: 0.25em;
+   font-family: var(--heading-font-family);
+-  font-weight: 600;
+-  line-height: 1.25;
++  font-weight: 700;
++  line-height: 1.1;
+   scroll-margin: 40px;
++  color: var(--text-warm-white);
+ }
+ 
+ h1 { font-size: var(--heading-font-size-xxl); }
+@@ -146,7 +162,7 @@ pre {
+ pre {
+   padding: 16px;
+   border-radius: 8px;
+-  background-color: var(--light-color);
++  background-color: rgb(255 255 255 / 5%);
+   overflow-x: auto;
+   white-space: pre;
+ }
+@@ -167,6 +183,7 @@ a:any-link {
+   color: var(--link-color);
+   text-decoration: none;
+   overflow-wrap: break-word;
++  transition: color var(--transition-base);
+ }
+ 
+ a:hover {
+@@ -182,20 +199,24 @@ button {
+   max-width: 100%;
+   margin: 12px 0;
+   border: 2px solid transparent;
+-  border-radius: 2.4em;
+-  padding: 0.5em 1.2em;
++  border-radius: var(--button-border-radius);
++  padding: var(--button-padding);
+   font-family: var(--body-font-family);
+   font-style: normal;
+-  font-weight: 500;
+-  line-height: 1.25;
++  font-weight: var(--button-font-weight);
++  font-size: var(--button-font-size);
++  line-height: 1.2;
+   text-align: center;
+   text-decoration: none;
+-  background-color: var(--link-color);
++  text-transform: var(--button-text-transform);
++  letter-spacing: var(--button-letter-spacing);
++  background-color: var(--accent-primary);
+   color: var(--background-color);
+   cursor: pointer;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
++  transition: var(--button-transition);
+ }
+ 
+ a.button:hover,
+@@ -206,17 +227,31 @@ button:focus {
+   cursor: pointer;
+ }
+ 
++a.button:focus,
++button:focus {
++  outline: 2px solid var(--accent-primary);
++  outline-offset: 2px;
++}
++
+ button:disabled,
+ button:disabled:hover {
+   background-color: var(--light-color);
+   cursor: unset;
++  opacity: 0.5;
+ }
+ 
++/* secondary button (outline) */
+ a.button.secondary,
+ button.secondary {
+-  background-color: unset;
+-  border: 2px solid currentcolor;
+-  color: var(--text-color);
++  background-color: transparent;
++  border: 2px solid var(--accent-primary);
++  color: var(--accent-primary);
++}
++
++a.button.secondary:hover,
++button.secondary:hover {
++  background-color: var(--accent-primary);
++  color: var(--background-color);
+ }
+ 
+ main img {
+@@ -242,7 +277,7 @@ main > .section {
+ }
+ 
+ main > .section > div {
+-  max-width: 1200px;
++  max-width: var(--section-max-width);
+   margin: auto;
+   padding: 0 24px;
+ }
+@@ -257,10 +292,38 @@ main > .section:first-of-type {
+   }
+ }
+ 
+-/* section metadata */
++/* section metadata variants */
++main .section.dark {
++  background-color: var(--background-color);
++  color: var(--text-warm-white);
++  margin: 0;
++  padding: 40px 0;
++}
++
+ main .section.light,
+ main .section.highlight {
+   background-color: var(--light-color);
++  color: rgb(22 25 22);
+   margin: 0;
+   padding: 40px 0;
+ }
++
++main .section.light h1,
++main .section.light h2,
++main .section.light h3,
++main .section.light h4,
++main .section.light h5,
++main .section.light h6 {
++  color: rgb(22 25 22);
++}
++
++main .section.light a:any-link {
++  color: var(--accent-primary);
++}
++
++main .section.gradient {
++  background: linear-gradient(135deg, rgb(22 25 22) 0%, rgb(40 50 40) 100%);
++  color: var(--text-warm-white);
++  margin: 0;
++  padding: var(--spacing-xl) 0;
++}
+diff --git a/tools/importer/import-about-page.bundle.js b/tools/importer/import-about-page.bundle.js
+new file mode 100644
+index 0000000..1542191
+--- /dev/null
++++ b/tools/importer/import-about-page.bundle.js
+@@ -0,0 +1,551 @@
++var CustomImportScript = (() => {
++  var __defProp = Object.defineProperty;
++  var __defProps = Object.defineProperties;
++  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
++  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
++  var __getOwnPropNames = Object.getOwnPropertyNames;
++  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
++  var __hasOwnProp = Object.prototype.hasOwnProperty;
++  var __propIsEnum = Object.prototype.propertyIsEnumerable;
++  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
++  var __spreadValues = (a, b) => {
++    for (var prop in b || (b = {}))
++      if (__hasOwnProp.call(b, prop))
++        __defNormalProp(a, prop, b[prop]);
++    if (__getOwnPropSymbols)
++      for (var prop of __getOwnPropSymbols(b)) {
++        if (__propIsEnum.call(b, prop))
++          __defNormalProp(a, prop, b[prop]);
++      }
++    return a;
++  };
++  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
++  var __export = (target, all) => {
++    for (var name in all)
++      __defProp(target, name, { get: all[name], enumerable: true });
++  };
++  var __copyProps = (to, from, except, desc) => {
++    if (from && typeof from === "object" || typeof from === "function") {
++      for (let key of __getOwnPropNames(from))
++        if (!__hasOwnProp.call(to, key) && key !== except)
++          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
++    }
++    return to;
++  };
++  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
++
++  // tools/importer/import-about-page.js
++  var import_about_page_exports = {};
++  __export(import_about_page_exports, {
++    default: () => import_about_page_default
++  });
++
++  // tools/importer/parsers/cards-subnav.js
++  function parse(element, { document }) {
++    const items = Array.from(element.querySelectorAll(".cmp-subnav__item"));
++    const cells = [];
++    items.forEach((item) => {
++      const imgEl = item.querySelector(".cmp-teaser__image img, .cmp-image__image");
++      const title = item.querySelector("h2.cmp-teaser__title, .cmp-teaser__title");
++      const description = item.querySelector(".cmp-teaser__description");
++      const link = item.querySelector("a.cmp-teaser__link");
++      const imageCell = document.createDocumentFragment();
++      imageCell.appendChild(document.createComment(" field:image "));
++      if (imgEl) {
++        const pic = document.createElement("picture");
++        const img = document.createElement("img");
++        img.src = imgEl.src || "";
++        img.alt = imgEl.alt || imgEl.title || "";
++        pic.appendChild(img);
++        imageCell.appendChild(pic);
++      }
++      const textCell = document.createDocumentFragment();
++      textCell.appendChild(document.createComment(" field:text "));
++      if (title) {
++        const h = document.createElement("p");
++        h.innerHTML = `<strong>${title.textContent.trim()}</strong>`;
++        textCell.appendChild(h);
++      }
++      if (description) {
++        const p = document.createElement("p");
++        p.textContent = description.textContent.trim();
++        textCell.appendChild(p);
++      }
++      if (link) {
++        const a = document.createElement("a");
++        a.href = link.href || "";
++        a.textContent = title ? title.textContent.trim() : "Read more";
++        textCell.appendChild(a);
++      }
++      cells.push([imageCell, textCell]);
++    });
++    const block = WebImporter.Blocks.createBlock(document, { name: "cards-subnav", cells });
++    element.replaceWith(block);
++  }
++
++  // tools/importer/parsers/hero-corporate.js
++  function parse2(element, { document }) {
++    const imgEl = element.querySelector(".cmp-teaser__image img, .cmp-image__image");
++    const eyebrow = element.querySelector(".cmp-teaser__pretitle");
++    const heading = element.querySelector("h1.cmp-teaser__title, h2.cmp-teaser__title, .cmp-teaser__title");
++    const description = element.querySelector(".cmp-teaser__description");
++    const ctaLinks = Array.from(element.querySelectorAll(".cmp-teaser__action-link, .cmp-teaser__action-container a"));
++    const cells = [];
++    const imageCell = document.createDocumentFragment();
++    imageCell.appendChild(document.createComment(" field:image "));
++    if (imgEl) {
++      const pic = document.createElement("picture");
++      const img = document.createElement("img");
++      img.src = imgEl.src || "";
++      img.alt = imgEl.alt || "";
++      pic.appendChild(img);
++      imageCell.appendChild(pic);
++    }
++    cells.push([imageCell]);
++    const textCell = document.createDocumentFragment();
++    textCell.appendChild(document.createComment(" field:text "));
++    if (eyebrow) textCell.appendChild(eyebrow);
++    if (heading) textCell.appendChild(heading);
++    if (description) {
++      const descChildren = Array.from(description.children);
++      descChildren.forEach((child) => textCell.appendChild(child));
++    }
++    ctaLinks.forEach((cta) => textCell.appendChild(cta));
++    cells.push([textCell]);
++    const block = WebImporter.Blocks.createBlock(document, { name: "hero-corporate", cells });
++    element.replaceWith(block);
++  }
++
++  // tools/importer/parsers/video-corporate.js
++  function parse3(element, { document }) {
++    const videoEl = element.querySelector("video source");
++    const videoSrc = videoEl ? videoEl.getAttribute("src") : "";
++    const posterImg = element.querySelector(".s7posterimage img, img.s7posterimage, video[poster]");
++    const posterSrc = posterImg ? posterImg.src || posterImg.getAttribute("poster") || "" : "";
++    const cells = [];
++    const uriCell = document.createDocumentFragment();
++    uriCell.appendChild(document.createComment(" field:uri "));
++    if (videoSrc) {
++      const a = document.createElement("a");
++      a.href = videoSrc;
++      a.textContent = videoSrc;
++      uriCell.appendChild(a);
++    } else {
++      const anyVideo = element.querySelector("video");
++      if (anyVideo && anyVideo.src) {
++        const a = document.createElement("a");
++        a.href = anyVideo.src;
++        a.textContent = anyVideo.src;
++        uriCell.appendChild(a);
++      }
++    }
++    cells.push([uriCell]);
++    const imgCell = document.createDocumentFragment();
++    imgCell.appendChild(document.createComment(" field:placeholder_image "));
++    if (posterSrc) {
++      const pic = document.createElement("picture");
++      const img = document.createElement("img");
++      img.src = posterSrc;
++      img.alt = posterImg ? posterImg.alt || "" : "";
++      pic.appendChild(img);
++      imgCell.appendChild(pic);
++    }
++    cells.push([imgCell]);
++    const block = WebImporter.Blocks.createBlock(document, { name: "video-corporate", cells });
++    element.replaceWith(block);
++  }
++
++  // tools/importer/parsers/columns-wayfinder.js
++  function parse4(element, { document }) {
++    if (element.dataset.columnsWayfinderProcessed) return;
++    const gridParent = element.closest(".aem-Grid") || element.closest(".cmp-container") || element.parentElement;
++    const allItems = gridParent ? Array.from(gridParent.querySelectorAll(".cmp-basicteaser--wayfinder")) : [element];
++    allItems.forEach((item) => {
++      item.dataset.columnsWayfinderProcessed = "true";
++    });
++    const row = [];
++    allItems.forEach((item) => {
++      const title = item.querySelector(".cmp-basicteaser__text, p.cmp-basicteaser__text");
++      const description = item.querySelector(".cmp-basicteaser__description p, .cmp-basicteaser__description");
++      const cell = document.createDocumentFragment();
++      if (title) {
++        const h = document.createElement("h3");
++        h.textContent = title.textContent.trim();
++        cell.appendChild(h);
++      }
++      if (description) {
++        const p = document.createElement("p");
++        p.textContent = description.textContent.trim();
++        cell.appendChild(p);
++      }
++      row.push(cell);
++    });
++    const cells = [row];
++    const block = WebImporter.Blocks.createBlock(document, { name: "columns-wayfinder", cells });
++    element.replaceWith(block);
++    allItems.slice(1).forEach((item) => {
++      const wrapper = item.closest(".aem-GridColumn") || item.parentElement;
++      if (wrapper && wrapper !== gridParent) wrapper.remove();
++    });
++  }
++
++  // tools/importer/parsers/carousel-stats.js
++  function parse5(element, { document }) {
++    const slides = Array.from(element.querySelectorAll(".cmp-carousel__item"));
++    const cells = [];
++    slides.forEach((slide) => {
++      const imageCell = document.createDocumentFragment();
++      imageCell.appendChild(document.createComment(" field:media_image "));
++      const textCell = document.createDocumentFragment();
++      textCell.appendChild(document.createComment(" field:content_text "));
++      const statNumber = slide.querySelector(".cmp-title__text, h3");
++      const statLabel = slide.querySelector(".cmp-text p");
++      if (statNumber) {
++        const h3 = document.createElement("h3");
++        h3.textContent = statNumber.textContent.trim();
++        textCell.appendChild(h3);
++      }
++      if (statLabel) {
++        const p = document.createElement("p");
++        p.textContent = statLabel.textContent.trim();
++        textCell.appendChild(p);
++      }
++      cells.push([imageCell, textCell]);
++    });
++    const block = WebImporter.Blocks.createBlock(document, { name: "carousel-stats", cells });
++    element.replaceWith(block);
++  }
++
++  // tools/importer/parsers/carousel-timeline.js
++  function parse6(element, { document }) {
++    const slides = Array.from(element.querySelectorAll(".cmp-carousel__item"));
++    const cells = [];
++    slides.forEach((slide) => {
++      const imageCell = document.createDocumentFragment();
++      imageCell.appendChild(document.createComment(" field:media_image "));
++      const textCell = document.createDocumentFragment();
++      textCell.appendChild(document.createComment(" field:content_text "));
++      const texts = Array.from(slide.querySelectorAll(".cmp-text"));
++      const yearText = texts[0];
++      const descText = texts[1];
++      if (yearText) {
++        const yearP = yearText.querySelector("p");
++        if (yearP) {
++          const h3 = document.createElement("h3");
++          h3.textContent = yearP.textContent.trim();
++          textCell.appendChild(h3);
++        }
++      }
++      if (descText) {
++        const descP = descText.querySelector("p");
++        if (descP) {
++          const p = document.createElement("p");
++          p.textContent = descP.textContent.trim();
++          textCell.appendChild(p);
++        }
++      }
++      cells.push([imageCell, textCell]);
++    });
++    const block = WebImporter.Blocks.createBlock(document, { name: "carousel-timeline", cells });
++    element.replaceWith(block);
++  }
++
++  // tools/importer/parsers/columns-promo.js
++  function parse7(element, { document }) {
++    const heading = element.querySelector("h3.cmp-teaser__title, h2.cmp-teaser__title, .cmp-teaser__title");
++    const description = element.querySelector(".cmp-teaser__description");
++    const ctaLink = element.querySelector(".cmp-teaser__action-link, .cmp-teaser__action-container a");
++    const imgEl = element.querySelector(".cmp-teaser__image img, .cmp-image__image");
++    const textCell = document.createDocumentFragment();
++    if (heading) {
++      const h3 = document.createElement("h3");
++      h3.textContent = heading.textContent.trim();
++      textCell.appendChild(h3);
++    }
++    if (description) {
++      const descP = description.querySelector("p");
++      if (descP) {
++        const p = document.createElement("p");
++        p.textContent = descP.textContent.trim();
++        textCell.appendChild(p);
++      }
++    }
++    if (ctaLink) {
++      const p = document.createElement("p");
++      const a = document.createElement("a");
++      a.href = ctaLink.href || "";
++      a.textContent = ctaLink.textContent.trim();
++      p.appendChild(a);
++      textCell.appendChild(p);
++    }
++    const imageCell = document.createDocumentFragment();
++    if (imgEl) {
++      const pic = document.createElement("picture");
++      const img = document.createElement("img");
++      img.src = imgEl.src || "";
++      img.alt = imgEl.alt || "";
++      pic.appendChild(img);
++      imageCell.appendChild(pic);
++    }
++    const cells = [[textCell, imageCell]];
++    const block = WebImporter.Blocks.createBlock(document, { name: "columns-promo", cells });
++    element.replaceWith(block);
++  }
++
++  // tools/importer/transformers/genpact-cleanup.js
++  var H = { before: "beforeTransform", after: "afterTransform" };
++  function transform(hookName, element, payload) {
++    if (hookName === H.before) {
++      WebImporter.DOMUtils.remove(element, [
++        "#onetrust-consent-sdk",
++        "#onetrust-banner-sdk",
++        "#onetrust-pc-sdk",
++        ".onetrust-pc-dark-filter"
++      ]);
++      WebImporter.DOMUtils.remove(element, [
++        ".s7emaildialog",
++        ".s7embeddialog",
++        ".s7linkdialog",
++        ".s7socialshare",
++        ".s7controlbar",
++        ".s7waiticon",
++        ".s7iconeffect"
++      ]);
++    }
++    if (hookName === H.after) {
++      WebImporter.DOMUtils.remove(element, [
++        "header.experiencefragment",
++        ".cmp-experiencefragment--header0",
++        ".cmp-experiencefragment--footer",
++        ".breadcrumb",
++        ".cmp-subnav__navigation",
++        "link",
++        "noscript",
++        "iframe",
++        "meta"
++      ]);
++      element.querySelectorAll("*").forEach((el) => {
++        el.removeAttribute("data-cmp-data-layer");
++        el.removeAttribute("data-cmp-link-accessibility-enabled");
++        el.removeAttribute("data-cmp-link-accessibility-text");
++        el.removeAttribute("onclick");
++        el.removeAttribute("data-track");
++      });
++    }
++  }
++
++  // tools/importer/transformers/genpact-sections.js
++  function transform2(hookName, element, payload) {
++    if (hookName === "afterTransform") {
++      const { document } = element.ownerDocument ? { document: element.ownerDocument } : { document };
++      const sections = payload && payload.template && payload.template.sections;
++      if (!sections || sections.length < 2) return;
++      const reversedSections = [...sections].reverse();
++      for (const section of reversedSections) {
++        const selectors = Array.isArray(section.selector) ? section.selector : [section.selector];
++        let sectionEl = null;
++        for (const sel of selectors) {
++          sectionEl = element.querySelector(sel);
++          if (sectionEl) break;
++        }
++        if (!sectionEl) continue;
++        if (section.style) {
++          const sectionMetadata = WebImporter.Blocks.createBlock(document, {
++            name: "Section Metadata",
++            cells: { style: section.style }
++          });
++          sectionEl.after(sectionMetadata);
++        }
++        if (section.id !== sections[0].id) {
++          const hr = document.createElement("hr");
++          sectionEl.before(hr);
++        }
++      }
++    }
++  }
++
++  // tools/importer/import-about-page.js
++  var parsers = {
++    "cards-subnav": parse,
++    "hero-corporate": parse2,
++    "video-corporate": parse3,
++    "columns-wayfinder": parse4,
++    "carousel-stats": parse5,
++    "carousel-timeline": parse6,
++    "columns-promo": parse7
++  };
++  var transformers = [
++    transform
++  ];
++  var PAGE_TEMPLATE = {
++    name: "about-page",
++    description: "About us page template with company overview and corporate information",
++    urls: [
++      "https://www.genpact.com/about-us"
++    ],
++    blocks: [
++      {
++        name: "cards-subnav",
++        instances: [".cmp-subnav .cmp-list.cmp-subnav__list"]
++      },
++      {
++        name: "hero-corporate",
++        instances: [".cmp-teaser--50-50.cmp-teaser--simple-hero"]
++      },
++      {
++        name: "video-corporate",
++        instances: [".dynamicmedia.parbase"]
++      },
++      {
++        name: "columns-wayfinder",
++        instances: [".cmp-basicteaser--wayfinder"]
++      },
++      {
++        name: "carousel-stats",
++        instances: [".cmp-carousel--slide.cmp-carousel--actions-arrows"]
++      },
++      {
++        name: "carousel-timeline",
++        instances: [".cmp-carousel--timeline"]
++      },
++      {
++        name: "columns-promo",
++        instances: [".cmp-teaser--50-50:not(.cmp-teaser--simple-hero)"]
++      }
++    ],
++    sections: [
++      {
++        id: "section-1",
++        name: "Hero",
++        selector: [".container.mb-section:has(.cmp-teaser--simple-hero)"],
++        style: "dark",
++        blocks: ["cards-subnav", "hero-corporate"],
++        defaultContent: []
++      },
++      {
++        id: "section-2",
++        name: "Body Text and Video",
++        selector: [".cmp-container--background-gradient-fade-down:has(.cmp-text--size-l)"],
++        style: "dark",
++        blocks: ["video-corporate"],
++        defaultContent: [".cmp-text--size-l"]
++      },
++      {
++        id: "section-3",
++        name: "Wayfinder Cards",
++        selector: [".container.mb-xl:has(.cmp-basicteaser--wayfinder)"],
++        style: "dark",
++        blocks: ["columns-wayfinder"],
++        defaultContent: []
++      },
++      {
++        id: "section-4",
++        name: "Stats",
++        selector: [".container.mb-section:has(.cmp-carousel--slide)"],
++        style: "dark",
++        blocks: ["carousel-stats"],
++        defaultContent: []
++      },
++      {
++        id: "section-5",
++        name: "Timeline",
++        selector: [".container.mb-section:has(.cmp-carousel--timeline)"],
++        style: "dark",
++        blocks: ["carousel-timeline"],
++        defaultContent: [".cmp-title--size-l", ".cmp-button--secondary-v2"]
++      },
++      {
++        id: "section-6",
++        name: "Genpact Intelligence",
++        selector: [".container.mb-section:has(.cmp-teaser--50-50:not(.cmp-teaser--simple-hero))"],
++        style: "dark",
++        blocks: ["columns-promo"],
++        defaultContent: []
++      },
++      {
++        id: "section-7",
++        name: "Contact CTA",
++        selector: [".cmp-container--background-gradient.cmp-container--background-gradient-right"],
++        style: "gradient",
++        blocks: [],
++        defaultContent: [".cmp-title--bold", ".cmp-button--primary-v2"]
++      }
++    ]
++  };
++  var allTransformers = [
++    ...transformers,
++    ...PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [transform2] : []
++  ];
++  function executeTransformers(hookName, element, payload) {
++    const enhancedPayload = __spreadProps(__spreadValues({}, payload), {
++      template: PAGE_TEMPLATE
++    });
++    allTransformers.forEach((transformerFn) => {
++      try {
++        transformerFn.call(null, hookName, element, enhancedPayload);
++      } catch (e) {
++        console.error(`Transformer failed at ${hookName}:`, e);
++      }
++    });
++  }
++  function findBlocksOnPage(document, template) {
++    const pageBlocks = [];
++    template.blocks.forEach((blockDef) => {
++      blockDef.instances.forEach((selector) => {
++        const elements = document.querySelectorAll(selector);
++        if (elements.length === 0) {
++          console.warn(`Block "${blockDef.name}" selector not found: ${selector}`);
++        }
++        elements.forEach((element) => {
++          pageBlocks.push({
++            name: blockDef.name,
++            selector,
++            element,
++            section: blockDef.section || null
++          });
++        });
++      });
++    });
++    console.log(`Found ${pageBlocks.length} block instances on page`);
++    return pageBlocks;
++  }
++  var import_about_page_default = {
++    transform: (payload) => {
++      const { document, url, html, params } = payload;
++      const main = document.body;
++      executeTransformers("beforeTransform", main, payload);
++      const pageBlocks = findBlocksOnPage(document, PAGE_TEMPLATE);
++      pageBlocks.forEach((block) => {
++        const parser = parsers[block.name];
++        if (parser) {
++          try {
++            parser(block.element, { document, url, params });
++          } catch (e) {
++            console.error(`Failed to parse ${block.name} (${block.selector}):`, e);
++          }
++        } else {
++          console.warn(`No parser found for block: ${block.name}`);
++        }
++      });
++      executeTransformers("afterTransform", main, payload);
++      const hr = document.createElement("hr");
++      main.appendChild(hr);
++      WebImporter.rules.createMetadata(main, document);
++      WebImporter.rules.transformBackgroundImages(main, document);
++      WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
++      const path = WebImporter.FileUtils.sanitizePath(
++        new URL(params.originalURL).pathname.replace(/\/$/, "").replace(/\.html$/, "")
++      );
++      return [{
++        element: main,
++        path,
++        report: {
++          title: document.title,
++          template: PAGE_TEMPLATE.name,
++          blocks: pageBlocks.map((b) => b.name)
++        }
++      }];
++    }
++  };
++  return __toCommonJS(import_about_page_exports);
++})();
+diff --git a/tools/importer/import-about-page.js b/tools/importer/import-about-page.js
+new file mode 100644
+index 0000000..e2e6868
+--- /dev/null
++++ b/tools/importer/import-about-page.js
+@@ -0,0 +1,233 @@
++/* eslint-disable */
++/* global WebImporter */
++
++// PARSER IMPORTS
++import cardsSubnavParser from './parsers/cards-subnav.js';
++import heroCorporateParser from './parsers/hero-corporate.js';
++import videoCorporateParser from './parsers/video-corporate.js';
++import columnsWayfinderParser from './parsers/columns-wayfinder.js';
++import carouselStatsParser from './parsers/carousel-stats.js';
++import carouselTimelineParser from './parsers/carousel-timeline.js';
++import columnsPromoParser from './parsers/columns-promo.js';
++
++// TRANSFORMER IMPORTS
++import cleanupTransformer from './transformers/genpact-cleanup.js';
++import sectionsTransformer from './transformers/genpact-sections.js';
++
++// PARSER REGISTRY
++const parsers = {
++  'cards-subnav': cardsSubnavParser,
++  'hero-corporate': heroCorporateParser,
++  'video-corporate': videoCorporateParser,
++  'columns-wayfinder': columnsWayfinderParser,
++  'carousel-stats': carouselStatsParser,
++  'carousel-timeline': carouselTimelineParser,
++  'columns-promo': columnsPromoParser,
++};
++
++// TRANSFORMER REGISTRY
++const transformers = [
++  cleanupTransformer,
++];
++
++// PAGE TEMPLATE CONFIGURATION
++const PAGE_TEMPLATE = {
++  name: 'about-page',
++  description: 'About us page template with company overview and corporate information',
++  urls: [
++    'https://www.genpact.com/about-us',
++  ],
++  blocks: [
++    {
++      name: 'cards-subnav',
++      instances: ['.cmp-subnav .cmp-list.cmp-subnav__list'],
++    },
++    {
++      name: 'hero-corporate',
++      instances: ['.cmp-teaser--50-50.cmp-teaser--simple-hero'],
++    },
++    {
++      name: 'video-corporate',
++      instances: ['.dynamicmedia.parbase'],
++    },
++    {
++      name: 'columns-wayfinder',
++      instances: ['.cmp-basicteaser--wayfinder'],
++    },
++    {
++      name: 'carousel-stats',
++      instances: ['.cmp-carousel--slide.cmp-carousel--actions-arrows'],
++    },
++    {
++      name: 'carousel-timeline',
++      instances: ['.cmp-carousel--timeline'],
++    },
++    {
++      name: 'columns-promo',
++      instances: ['.cmp-teaser--50-50:not(.cmp-teaser--simple-hero)'],
++    },
++  ],
++  sections: [
++    {
++      id: 'section-1',
++      name: 'Hero',
++      selector: ['.container.mb-section:has(.cmp-teaser--simple-hero)'],
++      style: 'dark',
++      blocks: ['cards-subnav', 'hero-corporate'],
++      defaultContent: [],
++    },
++    {
++      id: 'section-2',
++      name: 'Body Text and Video',
++      selector: ['.cmp-container--background-gradient-fade-down:has(.cmp-text--size-l)'],
++      style: 'dark',
++      blocks: ['video-corporate'],
++      defaultContent: ['.cmp-text--size-l'],
++    },
++    {
++      id: 'section-3',
++      name: 'Wayfinder Cards',
++      selector: ['.container.mb-xl:has(.cmp-basicteaser--wayfinder)'],
++      style: 'dark',
++      blocks: ['columns-wayfinder'],
++      defaultContent: [],
++    },
++    {
++      id: 'section-4',
++      name: 'Stats',
++      selector: ['.container.mb-section:has(.cmp-carousel--slide)'],
++      style: 'dark',
++      blocks: ['carousel-stats'],
++      defaultContent: [],
++    },
++    {
++      id: 'section-5',
++      name: 'Timeline',
++      selector: ['.container.mb-section:has(.cmp-carousel--timeline)'],
++      style: 'dark',
++      blocks: ['carousel-timeline'],
++      defaultContent: ['.cmp-title--size-l', '.cmp-button--secondary-v2'],
++    },
++    {
++      id: 'section-6',
++      name: 'Genpact Intelligence',
++      selector: ['.container.mb-section:has(.cmp-teaser--50-50:not(.cmp-teaser--simple-hero))'],
++      style: 'dark',
++      blocks: ['columns-promo'],
++      defaultContent: [],
++    },
++    {
++      id: 'section-7',
++      name: 'Contact CTA',
++      selector: ['.cmp-container--background-gradient.cmp-container--background-gradient-right'],
++      style: 'gradient',
++      blocks: [],
++      defaultContent: ['.cmp-title--bold', '.cmp-button--primary-v2'],
++    },
++  ],
++};
++
++// Section transformer added conditionally based on template sections
++const allTransformers = [
++  ...transformers,
++  ...(PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [sectionsTransformer] : []),
++];
++
++/**
++ * Execute all page transformers for a specific hook
++ */
++function executeTransformers(hookName, element, payload) {
++  const enhancedPayload = {
++    ...payload,
++    template: PAGE_TEMPLATE,
++  };
++
++  allTransformers.forEach((transformerFn) => {
++    try {
++      transformerFn.call(null, hookName, element, enhancedPayload);
++    } catch (e) {
++      console.error(`Transformer failed at ${hookName}:`, e);
++    }
++  });
++}
++
++/**
++ * Find all blocks on the page based on the embedded template configuration
++ */
++function findBlocksOnPage(document, template) {
++  const pageBlocks = [];
++
++  template.blocks.forEach((blockDef) => {
++    blockDef.instances.forEach((selector) => {
++      const elements = document.querySelectorAll(selector);
++      if (elements.length === 0) {
++        console.warn(`Block "${blockDef.name}" selector not found: ${selector}`);
++      }
++      elements.forEach((element) => {
++        pageBlocks.push({
++          name: blockDef.name,
++          selector,
++          element,
++          section: blockDef.section || null,
++        });
++      });
++    });
++  });
++
++  console.log(`Found ${pageBlocks.length} block instances on page`);
++  return pageBlocks;
++}
++
++// EXPORT DEFAULT CONFIGURATION
++export default {
++  transform: (payload) => {
++    const { document, url, html, params } = payload;
++
++    const main = document.body;
++
++    // 1. Execute beforeTransform transformers (initial cleanup)
++    executeTransformers('beforeTransform', main, payload);
++
++    // 2. Find blocks on page using embedded template
++    const pageBlocks = findBlocksOnPage(document, PAGE_TEMPLATE);
++
++    // 3. Parse each block using registered parsers
++    pageBlocks.forEach((block) => {
++      const parser = parsers[block.name];
++      if (parser) {
++        try {
++          parser(block.element, { document, url, params });
++        } catch (e) {
++          console.error(`Failed to parse ${block.name} (${block.selector}):`, e);
++        }
++      } else {
++        console.warn(`No parser found for block: ${block.name}`);
++      }
++    });
++
++    // 4. Execute afterTransform transformers (final cleanup + section breaks/metadata)
++    executeTransformers('afterTransform', main, payload);
++
++    // 5. Apply WebImporter built-in rules
++    const hr = document.createElement('hr');
++    main.appendChild(hr);
++    WebImporter.rules.createMetadata(main, document);
++    WebImporter.rules.transformBackgroundImages(main, document);
++    WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
++
++    // 6. Generate sanitized path
++    const path = WebImporter.FileUtils.sanitizePath(
++      new URL(params.originalURL).pathname.replace(/\/$/, '').replace(/\.html$/, ''),
++    );
++
++    return [{
++      element: main,
++      path,
++      report: {
++        title: document.title,
++        template: PAGE_TEMPLATE.name,
++        blocks: pageBlocks.map((b) => b.name),
++      },
++    }];
++  },
++};
+diff --git a/tools/importer/page-templates.json b/tools/importer/page-templates.json
+new file mode 100644
+index 0000000..8e28ca0
+--- /dev/null
++++ b/tools/importer/page-templates.json
+@@ -0,0 +1,148 @@
++{
++  "templates": [
++    {
++      "name": "about-page",
++      "urls": [
++        "https://www.genpact.com/about-us"
++      ],
++      "description": "About us page template with company overview and corporate information",
++      "blocks": [
++        {
++          "name": "cards-subnav",
++          "instances": [
++            ".cmp-subnav .cmp-list.cmp-subnav__list"
++          ]
++        },
++        {
++          "name": "hero-corporate",
++          "instances": [
++            ".cmp-teaser--50-50.cmp-teaser--simple-hero"
++          ]
++        },
++        {
++          "name": "video-corporate",
++          "instances": [
++            ".dynamicmedia.parbase"
++          ]
++        },
++        {
++          "name": "columns-wayfinder",
++          "instances": [
++            ".cmp-basicteaser--wayfinder"
++          ]
++        },
++        {
++          "name": "carousel-stats",
++          "instances": [
++            ".cmp-carousel--slide.cmp-carousel--actions-arrows"
++          ]
++        },
++        {
++          "name": "carousel-timeline",
++          "instances": [
++            ".cmp-carousel--timeline"
++          ]
++        },
++        {
++          "name": "columns-promo",
++          "instances": [
++            ".cmp-teaser--50-50:not(.cmp-teaser--simple-hero)"
++          ]
++        }
++      ],
++      "sections": [
++        {
++          "id": "section-1",
++          "name": "Hero",
++          "selector": [
++            ".container.mb-section:has(.cmp-teaser--simple-hero)"
++          ],
++          "style": "dark",
++          "blocks": [
++            "cards-subnav",
++            "hero-corporate"
++          ],
++          "defaultContent": []
++        },
++        {
++          "id": "section-2",
++          "name": "Body Text and Video",
++          "selector": [
++            ".cmp-container--background-gradient-fade-down:has(.cmp-text--size-l)"
++          ],
++          "style": "dark",
++          "blocks": [
++            "video-corporate"
++          ],
++          "defaultContent": [
++            ".cmp-text--size-l"
++          ]
++        },
++        {
++          "id": "section-3",
++          "name": "Wayfinder Cards",
++          "selector": [
++            ".container.mb-xl:has(.cmp-basicteaser--wayfinder)"
++          ],
++          "style": "dark",
++          "blocks": [
++            "columns-wayfinder"
++          ],
++          "defaultContent": []
++        },
++        {
++          "id": "section-4",
++          "name": "Stats",
++          "selector": [
++            ".container.mb-section:has(.cmp-carousel--slide)"
++          ],
++          "style": "dark",
++          "blocks": [
++            "carousel-stats"
++          ],
++          "defaultContent": []
++        },
++        {
++          "id": "section-5",
++          "name": "Timeline",
++          "selector": [
++            ".container.mb-section:has(.cmp-carousel--timeline)"
++          ],
++          "style": "dark",
++          "blocks": [
++            "carousel-timeline"
++          ],
++          "defaultContent": [
++            ".cmp-title--size-l",
++            ".cmp-button--secondary-v2"
++          ]
++        },
++        {
++          "id": "section-6",
++          "name": "Genpact Intelligence",
++          "selector": [
++            ".container.mb-section:has(.cmp-teaser--50-50:not(.cmp-teaser--simple-hero))"
++          ],
++          "style": "dark",
++          "blocks": [
++            "columns-promo"
++          ],
++          "defaultContent": []
++        },
++        {
++          "id": "section-7",
++          "name": "Contact CTA",
++          "selector": [
++            ".cmp-container--background-gradient.cmp-container--background-gradient-right"
++          ],
++          "style": "gradient",
++          "blocks": [],
++          "defaultContent": [
++            ".cmp-title--bold",
++            ".cmp-button--primary-v2"
++          ]
++        }
++      ]
++    }
++  ]
++}
+diff --git a/tools/importer/parsers/cards-subnav.js b/tools/importer/parsers/cards-subnav.js
+new file mode 100644
+index 0000000..ce31a60
+--- /dev/null
++++ b/tools/importer/parsers/cards-subnav.js
+@@ -0,0 +1,56 @@
++/* eslint-disable */
++/* global WebImporter */
++/**
++ * Parser for cards-subnav. Base: cards.
++ * Source: https://www.genpact.com/about-us (.cmp-subnav .cmp-list.cmp-subnav__list)
++ * Container block: each card row = [image, text]
++ * Model fields per card: image (reference), text (richtext)
++ */
++export default function parse(element, { document }) {
++  const items = Array.from(element.querySelectorAll('.cmp-subnav__item'));
++  const cells = [];
++
++  items.forEach((item) => {
++    const imgEl = item.querySelector('.cmp-teaser__image img, .cmp-image__image');
++    const title = item.querySelector('h2.cmp-teaser__title, .cmp-teaser__title');
++    const description = item.querySelector('.cmp-teaser__description');
++    const link = item.querySelector('a.cmp-teaser__link');
++
++    // Column 1: image
++    const imageCell = document.createDocumentFragment();
++    imageCell.appendChild(document.createComment(' field:image '));
++    if (imgEl) {
++      const pic = document.createElement('picture');
++      const img = document.createElement('img');
++      img.src = imgEl.src || '';
++      img.alt = imgEl.alt || imgEl.title || '';
++      pic.appendChild(img);
++      imageCell.appendChild(pic);
++    }
++
++    // Column 2: text (title + description + link)
++    const textCell = document.createDocumentFragment();
++    textCell.appendChild(document.createComment(' field:text '));
++    if (title) {
++      const h = document.createElement('p');
++      h.innerHTML = `<strong>${title.textContent.trim()}</strong>`;
++      textCell.appendChild(h);
++    }
++    if (description) {
++      const p = document.createElement('p');
++      p.textContent = description.textContent.trim();
++      textCell.appendChild(p);
++    }
++    if (link) {
++      const a = document.createElement('a');
++      a.href = link.href || '';
++      a.textContent = title ? title.textContent.trim() : 'Read more';
++      textCell.appendChild(a);
++    }
++
++    cells.push([imageCell, textCell]);
++  });
++
++  const block = WebImporter.Blocks.createBlock(document, { name: 'cards-subnav', cells });
++  element.replaceWith(block);
++}
+diff --git a/tools/importer/parsers/carousel-stats.js b/tools/importer/parsers/carousel-stats.js
+new file mode 100644
+index 0000000..2a2c16f
+--- /dev/null
++++ b/tools/importer/parsers/carousel-stats.js
+@@ -0,0 +1,42 @@
++/* eslint-disable */
++/* global WebImporter */
++/**
++ * Parser for carousel-stats. Base: carousel.
++ * Source: https://www.genpact.com/about-us (.cmp-carousel--slide.cmp-carousel--actions-arrows)
++ * Container block: each slide row = [image, text]
++ * Model fields per slide: media_image (reference, media_imageAlt collapsed), content_text (richtext)
++ * Stats carousel: large number + label per slide
++ */
++export default function parse(element, { document }) {
++  const slides = Array.from(element.querySelectorAll('.cmp-carousel__item'));
++  const cells = [];
++
++  slides.forEach((slide) => {
++    // Column 1: image (empty for stats - no background image)
++    const imageCell = document.createDocumentFragment();
++    imageCell.appendChild(document.createComment(' field:media_image '));
++
++    // Column 2: text content (stat number + label)
++    const textCell = document.createDocumentFragment();
++    textCell.appendChild(document.createComment(' field:content_text '));
++
++    const statNumber = slide.querySelector('.cmp-title__text, h3');
++    const statLabel = slide.querySelector('.cmp-text p');
++
++    if (statNumber) {
++      const h3 = document.createElement('h3');
++      h3.textContent = statNumber.textContent.trim();
++      textCell.appendChild(h3);
++    }
++    if (statLabel) {
++      const p = document.createElement('p');
++      p.textContent = statLabel.textContent.trim();
++      textCell.appendChild(p);
++    }
++
++    cells.push([imageCell, textCell]);
++  });
++
++  const block = WebImporter.Blocks.createBlock(document, { name: 'carousel-stats', cells });
++  element.replaceWith(block);
++}
+diff --git a/tools/importer/parsers/carousel-timeline.js b/tools/importer/parsers/carousel-timeline.js
+new file mode 100644
+index 0000000..1d05b3a
+--- /dev/null
++++ b/tools/importer/parsers/carousel-timeline.js
+@@ -0,0 +1,50 @@
++/* eslint-disable */
++/* global WebImporter */
++/**
++ * Parser for carousel-timeline. Base: carousel.
++ * Source: https://www.genpact.com/about-us (.cmp-carousel--timeline)
++ * Container block: each slide row = [image, text]
++ * Model fields per slide: media_image (reference, media_imageAlt collapsed), content_text (richtext)
++ * Timeline carousel: year + description per slide
++ */
++export default function parse(element, { document }) {
++  const slides = Array.from(element.querySelectorAll('.cmp-carousel__item'));
++  const cells = [];
++
++  slides.forEach((slide) => {
++    // Column 1: image (empty for timeline - no background image)
++    const imageCell = document.createDocumentFragment();
++    imageCell.appendChild(document.createComment(' field:media_image '));
++
++    // Column 2: text content (year heading + description)
++    const textCell = document.createDocumentFragment();
++    textCell.appendChild(document.createComment(' field:content_text '));
++
++    const texts = Array.from(slide.querySelectorAll('.cmp-text'));
++    // First text is the year (size-xxl), second is description (size-xl)
++    const yearText = texts[0];
++    const descText = texts[1];
++
++    if (yearText) {
++      const yearP = yearText.querySelector('p');
++      if (yearP) {
++        const h3 = document.createElement('h3');
++        h3.textContent = yearP.textContent.trim();
++        textCell.appendChild(h3);
++      }
++    }
++    if (descText) {
++      const descP = descText.querySelector('p');
++      if (descP) {
++        const p = document.createElement('p');
++        p.textContent = descP.textContent.trim();
++        textCell.appendChild(p);
++      }
++    }
++
++    cells.push([imageCell, textCell]);
++  });
++
++  const block = WebImporter.Blocks.createBlock(document, { name: 'carousel-timeline', cells });
++  element.replaceWith(block);
++}
+diff --git a/tools/importer/parsers/columns-promo.js b/tools/importer/parsers/columns-promo.js
+new file mode 100644
+index 0000000..b4a7bb3
+--- /dev/null
++++ b/tools/importer/parsers/columns-promo.js
+@@ -0,0 +1,53 @@
++/* eslint-disable */
++/* global WebImporter */
++/**
++ * Parser for columns-promo. Base: columns.
++ * Source: https://www.genpact.com/about-us (.cmp-teaser--50-50:not(.cmp-teaser--simple-hero))
++ * Columns block: No field hints (Columns exception per hinting.md)
++ * 2-column layout: text content (heading + description + CTA) | image
++ */
++export default function parse(element, { document }) {
++  const heading = element.querySelector('h3.cmp-teaser__title, h2.cmp-teaser__title, .cmp-teaser__title');
++  const description = element.querySelector('.cmp-teaser__description');
++  const ctaLink = element.querySelector('.cmp-teaser__action-link, .cmp-teaser__action-container a');
++  const imgEl = element.querySelector('.cmp-teaser__image img, .cmp-image__image');
++
++  // Column 1: text content
++  const textCell = document.createDocumentFragment();
++  if (heading) {
++    const h3 = document.createElement('h3');
++    h3.textContent = heading.textContent.trim();
++    textCell.appendChild(h3);
++  }
++  if (description) {
++    const descP = description.querySelector('p');
++    if (descP) {
++      const p = document.createElement('p');
++      p.textContent = descP.textContent.trim();
++      textCell.appendChild(p);
++    }
++  }
++  if (ctaLink) {
++    const p = document.createElement('p');
++    const a = document.createElement('a');
++    a.href = ctaLink.href || '';
++    a.textContent = ctaLink.textContent.trim();
++    p.appendChild(a);
++    textCell.appendChild(p);
++  }
++
++  // Column 2: image
++  const imageCell = document.createDocumentFragment();
++  if (imgEl) {
++    const pic = document.createElement('picture');
++    const img = document.createElement('img');
++    img.src = imgEl.src || '';
++    img.alt = imgEl.alt || '';
++    pic.appendChild(img);
++    imageCell.appendChild(pic);
++  }
++
++  const cells = [[textCell, imageCell]];
++  const block = WebImporter.Blocks.createBlock(document, { name: 'columns-promo', cells });
++  element.replaceWith(block);
++}
+diff --git a/tools/importer/parsers/columns-wayfinder.js b/tools/importer/parsers/columns-wayfinder.js
+new file mode 100644
+index 0000000..0749ecc
+--- /dev/null
++++ b/tools/importer/parsers/columns-wayfinder.js
+@@ -0,0 +1,52 @@
++/* eslint-disable */
++/* global WebImporter */
++/**
++ * Parser for columns-wayfinder. Base: columns.
++ * Source: https://www.genpact.com/about-us (.cmp-basicteaser--wayfinder)
++ * Columns block: No field hints (Columns exception per hinting.md)
++ * 3 columns side-by-side, each with heading + description
++ * Note: selector matches each wayfinder item individually, so first match
++ * collects all siblings and subsequent matches are skipped.
++ */
++export default function parse(element, { document }) {
++  // Skip if already processed by a sibling
++  if (element.dataset.columnsWayfinderProcessed) return;
++
++  // Find all wayfinder siblings in the same grid container
++  const gridParent = element.closest('.aem-Grid') || element.closest('.cmp-container') || element.parentElement;
++  const allItems = gridParent
++    ? Array.from(gridParent.querySelectorAll('.cmp-basicteaser--wayfinder'))
++    : [element];
++
++  // Mark all as processed
++  allItems.forEach((item) => { item.dataset.columnsWayfinderProcessed = 'true'; });
++
++  const row = [];
++  allItems.forEach((item) => {
++    const title = item.querySelector('.cmp-basicteaser__text, p.cmp-basicteaser__text');
++    const description = item.querySelector('.cmp-basicteaser__description p, .cmp-basicteaser__description');
++
++    const cell = document.createDocumentFragment();
++    if (title) {
++      const h = document.createElement('h3');
++      h.textContent = title.textContent.trim();
++      cell.appendChild(h);
++    }
++    if (description) {
++      const p = document.createElement('p');
++      p.textContent = description.textContent.trim();
++      cell.appendChild(p);
++    }
++    row.push(cell);
++  });
++
++  const cells = [row];
++  const block = WebImporter.Blocks.createBlock(document, { name: 'columns-wayfinder', cells });
++  element.replaceWith(block);
++
++  // Remove remaining wayfinder items (they are now in the block)
++  allItems.slice(1).forEach((item) => {
++    const wrapper = item.closest('.aem-GridColumn') || item.parentElement;
++    if (wrapper && wrapper !== gridParent) wrapper.remove();
++  });
++}
+diff --git a/tools/importer/parsers/hero-corporate.js b/tools/importer/parsers/hero-corporate.js
+new file mode 100644
+index 0000000..ba0d5b2
+--- /dev/null
++++ b/tools/importer/parsers/hero-corporate.js
+@@ -0,0 +1,48 @@
++/* eslint-disable */
++/* global WebImporter */
++/**
++ * Parser for hero-corporate. Base: hero.
++ * Source: https://www.genpact.com/about-us
++ * Model fields: image (reference), imageAlt (collapsed), text (richtext)
++ * Hero block: row 1 = image, row 2 = text (heading + description + CTAs)
++ */
++export default function parse(element, { document }) {
++  // Extract image from .cmp-teaser__image
++  const imgEl = element.querySelector('.cmp-teaser__image img, .cmp-image__image');
++
++  // Extract text content: eyebrow, heading, description
++  const eyebrow = element.querySelector('.cmp-teaser__pretitle');
++  const heading = element.querySelector('h1.cmp-teaser__title, h2.cmp-teaser__title, .cmp-teaser__title');
++  const description = element.querySelector('.cmp-teaser__description');
++  const ctaLinks = Array.from(element.querySelectorAll('.cmp-teaser__action-link, .cmp-teaser__action-container a'));
++
++  const cells = [];
++
++  // Row 1: image (field: image, imageAlt is collapsed)
++  const imageCell = document.createDocumentFragment();
++  imageCell.appendChild(document.createComment(' field:image '));
++  if (imgEl) {
++    const pic = document.createElement('picture');
++    const img = document.createElement('img');
++    img.src = imgEl.src || '';
++    img.alt = imgEl.alt || '';
++    pic.appendChild(img);
++    imageCell.appendChild(pic);
++  }
++  cells.push([imageCell]);
++
++  // Row 2: text (richtext - heading, description, CTAs)
++  const textCell = document.createDocumentFragment();
++  textCell.appendChild(document.createComment(' field:text '));
++  if (eyebrow) textCell.appendChild(eyebrow);
++  if (heading) textCell.appendChild(heading);
++  if (description) {
++    const descChildren = Array.from(description.children);
++    descChildren.forEach((child) => textCell.appendChild(child));
++  }
++  ctaLinks.forEach((cta) => textCell.appendChild(cta));
++  cells.push([textCell]);
++
++  const block = WebImporter.Blocks.createBlock(document, { name: 'hero-corporate', cells });
++  element.replaceWith(block);
++}
+diff --git a/tools/importer/parsers/video-corporate.js b/tools/importer/parsers/video-corporate.js
+new file mode 100644
+index 0000000..841628b
+--- /dev/null
++++ b/tools/importer/parsers/video-corporate.js
+@@ -0,0 +1,55 @@
++/* eslint-disable */
++/* global WebImporter */
++/**
++ * Parser for video-corporate. Base: video.
++ * Source: https://www.genpact.com/about-us (.dynamicmedia.parbase)
++ * Simple block: row 1 = uri (video link), row 2 = placeholder_image (poster)
++ * Model fields: uri (aem-content), classes (skip), placeholder_image (reference, placeholder_imageAlt collapsed)
++ * Video block: 1 column, row 1 = video URL, row 2 = poster image
++ */
++export default function parse(element, { document }) {
++  // Extract video source URL
++  const videoEl = element.querySelector('video source');
++  const videoSrc = videoEl ? videoEl.getAttribute('src') : '';
++  // Try to find the poster image
++  const posterImg = element.querySelector('.s7posterimage img, img.s7posterimage, video[poster]');
++  const posterSrc = posterImg ? (posterImg.src || posterImg.getAttribute('poster') || '') : '';
++
++  const cells = [];
++
++  // Row 1: uri (video link)
++  const uriCell = document.createDocumentFragment();
++  uriCell.appendChild(document.createComment(' field:uri '));
++  if (videoSrc) {
++    const a = document.createElement('a');
++    a.href = videoSrc;
++    a.textContent = videoSrc;
++    uriCell.appendChild(a);
++  } else {
++    // Fallback: try to find any video-related URL
++    const anyVideo = element.querySelector('video');
++    if (anyVideo && anyVideo.src) {
++      const a = document.createElement('a');
++      a.href = anyVideo.src;
++      a.textContent = anyVideo.src;
++      uriCell.appendChild(a);
++    }
++  }
++  cells.push([uriCell]);
++
++  // Row 2: placeholder_image (poster image)
++  const imgCell = document.createDocumentFragment();
++  imgCell.appendChild(document.createComment(' field:placeholder_image '));
++  if (posterSrc) {
++    const pic = document.createElement('picture');
++    const img = document.createElement('img');
++    img.src = posterSrc;
++    img.alt = posterImg ? (posterImg.alt || '') : '';
++    pic.appendChild(img);
++    imgCell.appendChild(pic);
++  }
++  cells.push([imgCell]);
++
++  const block = WebImporter.Blocks.createBlock(document, { name: 'video-corporate', cells });
++  element.replaceWith(block);
++}
+diff --git a/tools/importer/reports/about-us.report.json b/tools/importer/reports/about-us.report.json
+new file mode 100644
+index 0000000..83837b3
+--- /dev/null
++++ b/tools/importer/reports/about-us.report.json
+@@ -0,0 +1,19 @@
++{
++  "status": "success",
++  "url": "https://www.genpact.com/about-us",
++  "path": "about-us",
++  "timestamp": "2026-04-02T16:49:24.885Z",
++  "title": "About Us | Genpact",
++  "template": "about-page",
++  "blocks": [
++    "cards-subnav",
++    "hero-corporate",
++    "video-corporate",
++    "columns-wayfinder",
++    "columns-wayfinder",
++    "columns-wayfinder",
++    "carousel-stats",
++    "carousel-timeline",
++    "columns-promo"
++  ]
++}
+\ No newline at end of file
+diff --git a/tools/importer/reports/import-about-page.report.xlsx b/tools/importer/reports/import-about-page.report.xlsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..e1a459a91e3259e5e2b900ba2fed15be64616974
+GIT binary patch
+literal 6990
+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
+VC0Y3IcMS{5LAszP5=?k&{(sdQg?<14
+
+literal 0
+HcmV?d00001
+
+diff --git a/tools/importer/transformers/genpact-cleanup.js b/tools/importer/transformers/genpact-cleanup.js
+new file mode 100644
+index 0000000..52344b4
+--- /dev/null
++++ b/tools/importer/transformers/genpact-cleanup.js
+@@ -0,0 +1,55 @@
++/* eslint-disable */
++/* global WebImporter */
++
++/**
++ * Transformer: genpact cleanup.
++ * Selectors from captured DOM of https://www.genpact.com/about-us
++ */
++const H = { before: 'beforeTransform', after: 'afterTransform' };
++
++export default function transform(hookName, element, payload) {
++  if (hookName === H.before) {
++    // Cookie consent banner (found: #onetrust-consent-sdk, #onetrust-banner-sdk, #onetrust-pc-sdk)
++    WebImporter.DOMUtils.remove(element, [
++      '#onetrust-consent-sdk',
++      '#onetrust-banner-sdk',
++      '#onetrust-pc-sdk',
++      '.onetrust-pc-dark-filter',
++    ]);
++
++    // Dynamic Media share dialogs and video controls (found: .s7emaildialog, .s7embeddialog, .s7linkdialog)
++    WebImporter.DOMUtils.remove(element, [
++      '.s7emaildialog',
++      '.s7embeddialog',
++      '.s7linkdialog',
++      '.s7socialshare',
++      '.s7controlbar',
++      '.s7waiticon',
++      '.s7iconeffect',
++    ]);
++  }
++
++  if (hookName === H.after) {
++    // Non-authorable content: header, footer, breadcrumb, subnav navigation buttons
++    WebImporter.DOMUtils.remove(element, [
++      'header.experiencefragment',
++      '.cmp-experiencefragment--header0',
++      '.cmp-experiencefragment--footer',
++      '.breadcrumb',
++      '.cmp-subnav__navigation',
++      'link',
++      'noscript',
++      'iframe',
++      'meta',
++    ]);
++
++    // Remove tracking/data attributes
++    element.querySelectorAll('*').forEach((el) => {
++      el.removeAttribute('data-cmp-data-layer');
++      el.removeAttribute('data-cmp-link-accessibility-enabled');
++      el.removeAttribute('data-cmp-link-accessibility-text');
++      el.removeAttribute('onclick');
++      el.removeAttribute('data-track');
++    });
++  }
++}
+diff --git a/tools/importer/transformers/genpact-sections.js b/tools/importer/transformers/genpact-sections.js
+new file mode 100644
+index 0000000..0ece812
+--- /dev/null
++++ b/tools/importer/transformers/genpact-sections.js
+@@ -0,0 +1,46 @@
++/* eslint-disable */
++/* global WebImporter */
++
++/**
++ * Transformer: genpact sections.
++ * Adds section breaks and section-metadata blocks based on template sections.
++ * Selectors from captured DOM of https://www.genpact.com/about-us
++ */
++
++export default function transform(hookName, element, payload) {
++  if (hookName === 'afterTransform') {
++    const { document } = element.ownerDocument ? { document: element.ownerDocument } : { document };
++    const sections = payload && payload.template && payload.template.sections;
++    if (!sections || sections.length < 2) return;
++
++    // Process sections in reverse order to avoid DOM position shifts
++    const reversedSections = [...sections].reverse();
++
++    for (const section of reversedSections) {
++      // Find the first element matching any selector for this section
++      const selectors = Array.isArray(section.selector) ? section.selector : [section.selector];
++      let sectionEl = null;
++      for (const sel of selectors) {
++        sectionEl = element.querySelector(sel);
++        if (sectionEl) break;
++      }
++
++      if (!sectionEl) continue;
++
++      // Add section-metadata block if section has a style
++      if (section.style) {
++        const sectionMetadata = WebImporter.Blocks.createBlock(document, {
++          name: 'Section Metadata',
++          cells: { style: section.style },
++        });
++        sectionEl.after(sectionMetadata);
++      }
++
++      // Add <hr> before section (except the first section)
++      if (section.id !== sections[0].id) {
++        const hr = document.createElement('hr');
++        sectionEl.before(hr);
++      }
++    }
++  }
++}
+diff --git a/tools/importer/urls-about-page.txt b/tools/importer/urls-about-page.txt
+new file mode 100644
+index 0000000..36c6b3d
+--- /dev/null
++++ b/tools/importer/urls-about-page.txt
+@@ -0,0 +1 @@
++https://www.genpact.com/about-us
+

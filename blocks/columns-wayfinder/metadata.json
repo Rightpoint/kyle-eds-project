@@ -1,0 +1,40 @@
+{
+  "variantName": "columns-wayfinder",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-04-02T16:25:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.genpact.com/about-us",
+    "originPage": "Corporate about us page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "spacious",
+    "purpose": "wayfinder-columns",
+    "imagePattern": "noimg",
+    "structure": "heading + description (3 columns)"
+  },
+  "contentPattern": {
+    "structure": "heading + description (3 columns)",
+    "buttonCount": 0,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "Text-only 3-column layouts",
+      "Value proposition columns",
+      "Feature highlight text blocks"
+    ],
+    "notSuitableFor": [
+      "Image-heavy column layouts",
+      "Two-column text-image splits",
+      "Column layouts with CTAs"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/about-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-04-02T16:25:00.000Z"
+  }
+}
