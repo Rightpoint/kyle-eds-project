@@ -1,0 +1,148 @@
+{
+  "templates": [
+    {
+      "name": "about-page",
+      "urls": [
+        "https://www.genpact.com/about-us"
+      ],
+      "description": "About us page template with company overview and corporate information",
+      "blocks": [
+        {
+          "name": "cards-subnav",
+          "instances": [
+            ".cmp-subnav .cmp-list.cmp-subnav__list"
+          ]
+        },
+        {
+          "name": "hero-corporate",
+          "instances": [
+            ".cmp-teaser--50-50.cmp-teaser--simple-hero"
+          ]
+        },
+        {
+          "name": "video-corporate",
+          "instances": [
+            ".dynamicmedia.parbase"
+          ]
+        },
+        {
+          "name": "columns-wayfinder",
+          "instances": [
+            ".cmp-basicteaser--wayfinder"
+          ]
+        },
+        {
+          "name": "carousel-stats",
+          "instances": [
+            ".cmp-carousel--slide.cmp-carousel--actions-arrows"
+          ]
+        },
+        {
+          "name": "carousel-timeline",
+          "instances": [
+            ".cmp-carousel--timeline"
+          ]
+        },
+        {
+          "name": "columns-promo",
+          "instances": [
+            ".cmp-teaser--50-50:not(.cmp-teaser--simple-hero)"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Hero",
+          "selector": [
+            ".container.mb-section:has(.cmp-teaser--simple-hero)"
+          ],
+          "style": "dark",
+          "blocks": [
+            "cards-subnav",
+            "hero-corporate"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2",
+          "name": "Body Text and Video",
+          "selector": [
+            ".cmp-container--background-gradient-fade-down:has(.cmp-text--size-l)"
+          ],
+          "style": "dark",
+          "blocks": [
+            "video-corporate"
+          ],
+          "defaultContent": [
+            ".cmp-text--size-l"
+          ]
+        },
+        {
+          "id": "section-3",
+          "name": "Wayfinder Cards",
+          "selector": [
+            ".container.mb-xl:has(.cmp-basicteaser--wayfinder)"
+          ],
+          "style": "dark",
+          "blocks": [
+            "columns-wayfinder"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-4",
+          "name": "Stats",
+          "selector": [
+            ".container.mb-section:has(.cmp-carousel--slide)"
+          ],
+          "style": "dark",
+          "blocks": [
+            "carousel-stats"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-5",
+          "name": "Timeline",
+          "selector": [
+            ".container.mb-section:has(.cmp-carousel--timeline)"
+          ],
+          "style": "dark",
+          "blocks": [
+            "carousel-timeline"
+          ],
+          "defaultContent": [
+            ".cmp-title--size-l",
+            ".cmp-button--secondary-v2"
+          ]
+        },
+        {
+          "id": "section-6",
+          "name": "Genpact Intelligence",
+          "selector": [
+            ".container.mb-section:has(.cmp-teaser--50-50:not(.cmp-teaser--simple-hero))"
+          ],
+          "style": "dark",
+          "blocks": [
+            "columns-promo"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-7",
+          "name": "Contact CTA",
+          "selector": [
+            ".cmp-container--background-gradient.cmp-container--background-gradient-right"
+          ],
+          "style": "gradient",
+          "blocks": [],
+          "defaultContent": [
+            ".cmp-title--bold",
+            ".cmp-button--primary-v2"
+          ]
+        }
+      ]
+    }
+  ]
+}

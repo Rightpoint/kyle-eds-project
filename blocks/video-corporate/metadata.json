@@ -1,0 +1,40 @@
+{
+  "variantName": "video-corporate",
+  "baseBlock": "video",
+  "version": "1.0.0",
+  "created": "2026-04-02T16:25:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.genpact.com/about-us",
+    "originPage": "Corporate about us page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "spacious",
+    "purpose": "corporate-video",
+    "imagePattern": "video-poster",
+    "structure": "video player with poster"
+  },
+  "contentPattern": {
+    "structure": "video player with poster",
+    "buttonCount": 0,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "Corporate overview videos",
+      "About us page videos",
+      "Company brand videos"
+    ],
+    "notSuitableFor": [
+      "Product demo videos",
+      "Background ambient videos",
+      "Tutorial videos"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/about-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-04-02T16:25:00.000Z"
+  }
+}

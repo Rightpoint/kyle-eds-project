@@ -34,15 +34,63 @@
     ]
   },
   {
+    "id": "cards-subnav",
+    "components": [
+      "card"
+    ]
+  },
+  {
     "id": "cards",
     "components": [
       "card"
     ]
   },
   {
+    "id": "carousel-stats",
+    "components": [
+      "carousel-stats-item"
+    ]
+  },
+  {
+    "id": "carousel-timeline",
+    "components": [
+      "carousel-timeline-item"
+    ]
+  },
+  {
     "id": "carousel",
     "components": [
       "carousel-item"
+    ]
+  },
+  {
+    "id": "columns-promo",
+    "components": [
+      "column"
+    ]
+  },
+  {
+    "id": "column",
+    "components": [
+      "text",
+      "image",
+      "button",
+      "title"
+    ]
+  },
+  {
+    "id": "columns-wayfinder",
+    "components": [
+      "column"
+    ]
+  },
+  {
+    "id": "column",
+    "components": [
+      "text",
+      "image",
+      "button",
+      "title"
     ]
   },
   {
@@ -89,6 +137,10 @@
     "components": [
       "tabs-item"
     ]
+  },
+  {
+    "id": "video-corporate",
+    "components": []
   },
   {
     "id": "video",

@@ -1,0 +1,19 @@
+{
+  "status": "success",
+  "url": "https://www.genpact.com/about-us",
+  "path": "about-us",
+  "timestamp": "2026-04-02T16:49:24.885Z",
+  "title": "About Us | Genpact",
+  "template": "about-page",
+  "blocks": [
+    "cards-subnav",
+    "hero-corporate",
+    "video-corporate",
+    "columns-wayfinder",
+    "columns-wayfinder",
+    "columns-wayfinder",
+    "carousel-stats",
+    "carousel-timeline",
+    "columns-promo"
+  ]
+}

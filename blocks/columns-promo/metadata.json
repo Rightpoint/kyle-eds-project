@@ -1,0 +1,40 @@
+{
+  "variantName": "columns-promo",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-04-02T16:25:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.genpact.com/about-us",
+    "originPage": "Corporate about us page",
+    "blockPosition": "bottom"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "spacious",
+    "purpose": "promo-columns",
+    "imagePattern": "logo-right",
+    "structure": "heading + description + CTA + image"
+  },
+  "contentPattern": {
+    "structure": "heading + description + CTA + image",
+    "buttonCount": 1,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "Promotional 50/50 teasers with CTA",
+      "Featured content with image and action",
+      "Product/service highlight sections"
+    ],
+    "notSuitableFor": [
+      "Text-only column layouts",
+      "Multi-column feature grids",
+      "Image gallery layouts"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/about-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-04-02T16:25:00.000Z"
+  }
+}
