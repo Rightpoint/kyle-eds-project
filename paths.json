@@ -1,7 +1,0 @@
-{
-  "mappings": [
-    "/content/toryburch/:/",
-    "/content/toryburch/metadata:/metadata.json",
-    "/content/toryburch/configuration:/.helix/config.json"
-  ]
-}
