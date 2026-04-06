@@ -143,6 +143,57 @@
           ]
         }
       ]
+    },
+    {
+      "name": "insight-article",
+      "urls": [
+        "https://www.genpact.com/insight/the-gen-ai-countdown"
+      ],
+      "description": "Insight article page template for thought leadership content, reports, and industry analysis",
+      "blocks": [
+        {
+          "name": "hero-article",
+          "instances": [".cmp-teaser--50-50.cmp-teaser--simple-hero"]
+        },
+        {
+          "name": "cards-insight",
+          "instances": [".cmp-teaser--overlay-card"]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Article Hero",
+          "selector": [".container.mb-m:has(.cmp-teaser--simple-hero)"],
+          "style": "dark",
+          "blocks": ["hero-article"],
+          "defaultContent": [".cmp-hero-details"]
+        },
+        {
+          "id": "section-2",
+          "name": "Article Body",
+          "selector": [".container.mb-section:has(.cmp-title--size-m)"],
+          "style": "dark",
+          "blocks": [],
+          "defaultContent": [".cmp-title--size-m", ".cmp-text--size-l", ".cmp-download--block"]
+        },
+        {
+          "id": "section-3",
+          "name": "Related Insights",
+          "selector": [".container.mt-xl.mb-section:has(.cmp-teaser--overlay-card)"],
+          "style": "dark",
+          "blocks": ["cards-insight"],
+          "defaultContent": [".cmp-title--faded-border"]
+        },
+        {
+          "id": "section-4",
+          "name": "Contact CTA",
+          "selector": [".container.cmp-container--vertical-bottom.mt-xl.mb-section"],
+          "style": "dark",
+          "blocks": [],
+          "defaultContent": [".cmp-title--bold", ".cmp-button--primary-v2"]
+        }
+      ]
     }
   ]
 }
