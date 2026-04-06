@@ -198,6 +198,17 @@ export default async function decorate(block) {
     brandLink.closest('.button-container').className = '';
   }
 
+  // Add logo image to brand link if not already present
+  const brandAnchor = navBrand.querySelector('a');
+  if (brandAnchor && !brandAnchor.querySelector('img')) {
+    const logo = document.createElement('img');
+    logo.src = '/icons/genpact-logo.svg';
+    logo.alt = 'Genpact';
+    logo.loading = 'eager';
+    brandAnchor.textContent = '';
+    brandAnchor.append(logo);
+  }
+
   const navSections = nav.querySelector('.nav-sections');
   if (navSections) {
     navSections.querySelectorAll(':scope .default-content-wrapper > ul > li').forEach((navSection) => {
