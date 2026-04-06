@@ -1,0 +1,32 @@
+{
+  "variantName": "cards-insight",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-04-06T15:48:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.genpact.com/insight/the-gen-ai-countdown",
+    "originPage": "Insight article page",
+    "blockPosition": "bottom"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "spacious",
+    "purpose": "related-insights",
+    "imagePattern": "overlay-card",
+    "structure": "image + overlay tag + title + description"
+  },
+  "contentPattern": {
+    "structure": "image + overlay tag + title + description",
+    "buttonCount": 0,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": ["Related insights sections", "Related articles", "Thought leadership teasers"],
+    "notSuitableFor": ["Navigation cards", "Product cards", "Feature highlight cards"]
+  },
+  "usage": {
+    "pagesUsing": ["/insight/the-gen-ai-countdown"],
+    "reuseCount": 1,
+    "lastUsed": "2026-04-06T15:48:00.000Z"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "variantName": "hero-article",
+  "baseBlock": "hero",
+  "version": "1.0.0",
+  "created": "2026-04-06T15:48:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.genpact.com/insight/the-gen-ai-countdown",
+    "originPage": "Insight article page",
+    "blockPosition": "top"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "spacious",
+    "purpose": "article-hero",
+    "imagePattern": "side-image-with-overlay",
+    "structure": "heading + description + CTA + image"
+  },
+  "contentPattern": {
+    "structure": "heading + description + CTA + image",
+    "buttonCount": 1,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": ["Insight articles", "Report pages", "Thought leadership content", "White paper pages"],
+    "notSuitableFor": ["Corporate about pages", "Product pages", "Landing pages without hero image"]
+  },
+  "usage": {
+    "pagesUsing": ["/insight/the-gen-ai-countdown"],
+    "reuseCount": 1,
+    "lastUsed": "2026-04-06T15:48:00.000Z"
+  }
+}
